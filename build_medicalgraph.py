@@ -10,7 +10,7 @@ from py2neo import Graph,Node
 class MedicalGraph:
     def __init__(self):
         cur_dir = '/'.join(os.path.abspath(__file__).split('/')[:-1])
-        self.data_path = os.path.join(cur_dir, 'data/medical2.json')
+        self.data_path = os.path.join(cur_dir, 'data/medical3.json')
         # self.g = Graph("http://localhost:7474", username="neo4j", password="ji32k7au4a83") # 版本問題ValueError: The following settings are not supported: {'username': 'neo4j'}
         self.g = Graph("http://localhost:7474", auth=("neo4j", "ji32k7au4a83"))
         self.g.delete_all()  # 先清空数据库，按需执行
@@ -18,7 +18,7 @@ class MedicalGraph:
     '''读取文件'''
     def read_nodes(self):
         # 共７类节点
-        drugs = [] # 药品
+        clinic_number = [] # 门诊号
         foods = [] #　食物
         checks = [] # 检查
         departments = [] #科室
