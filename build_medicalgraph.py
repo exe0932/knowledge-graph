@@ -18,17 +18,44 @@ class MedicalGraph:
     '''读取文件'''
     def read_nodes(self):
         # 共７类节点
-        clinic_number = [] # 门诊号
-        foods = [] #　食物
-        checks = [] # 检查
-        departments = [] #科室
-        producers = [] #药品大类
-        diseases = [] #疾病
-        symptoms = []#症状
+        clinic_numbers = []      # 门诊号
+        visit_numbers = []       # 就诊号
+        department_name = []    # 科室名称
+        patient_name = []       # 患者名称
+        id_number = []          # 身份证号
+        patient_gender = []     # 患者性别
+        age = []                # 年龄
 
-        disease_infos = []#疾病信息
+        disease_infos = []      # 疾病信息
+
+        doctor_id = []                              # 医生工号
+        medical_payment_method = []                 # 医疗付款方式
+        main_diagnostic_code = []                   # 主要诊断编码
+        main_diagnosis_description = []             # 主要诊断描述
+        main_diagnosis_name = []                    # 主要诊断名称
+        doctor_name = []                            # 医生名称
+        other_diagnoses_1 = []                      # 其他诊断1
+        other_diagnosis_1_code = []                 # 其他诊断1编码
+        other_diagnoses_2 = []                      # 其他诊断2
+        other_diagnosis_2_code = []                 # 其他诊断2编码
+        other_diagnoses_3 = []                      # 其他诊断3
+        other_diagnosis_3_code = []                 # 其他诊断3编码
+        epidemiological_history_of_convid_19 = []   # 是否有新冠肺炎流行病学史
+        physical_exam_description = []              # 体格检查描述
+        contents_of_doctors_orders = []             # 医嘱项目内容
+        describe = []                               # 描述
+        main_complaint = []                         # 主诉
+        history_of_present_illness = []             # 现病史
+        past_history = []                           # 既往史
+
+
+
+
+
+
 
         # 构建节点实体关系
+        rels_clinic_visit = []  # 门诊号-就诊号关系
         rels_department = [] #　科室－科室关系
         rels_noteat = [] # 疾病－忌吃食物关系
         rels_doeat = [] # 疾病－宜吃食物关系
@@ -44,113 +71,131 @@ class MedicalGraph:
 
 
         count = 0
-        for data in open(self.data_path):
+        for data in open(self.data_path, 'r', encoding='utf-8'): # 加入 encoding='utf-8'才不会报错
             disease_dict = {}
             count += 1
             print(count)
             data_json = json.loads(data)
-            disease = data_json['name']
-            disease_dict['name'] = disease
-            diseases.append(disease)
-            disease_dict['desc'] = ''
-            disease_dict['prevent'] = ''
-            disease_dict['cause'] = ''
-            disease_dict['easy_get'] = ''
-            disease_dict['cure_department'] = ''
-            disease_dict['cure_way'] = ''
-            disease_dict['cure_lasttime'] = ''
-            disease_dict['symptom'] = ''
-            disease_dict['cured_prob'] = ''
+            clinic_number = data_json['门诊号']
+            disease_dict['门诊号'] = clinic_number
+            clinic_numbers.append(clinic_number)
+            disease_dict['就诊号'] = ''
+            disease_dict['科室名称'] = ''
+            disease_dict['患者名称'] = ''
+            disease_dict['身份证号'] = ''
+            disease_dict['患者性别'] = ''
+            disease_dict['年龄'] = ''
+            disease_dict['医生工号'] = ''
+            disease_dict['医疗付款方式'] = ''
+            disease_dict['主要诊断编码'] = ''
+            disease_dict['主要诊断描述'] = ''
+            disease_dict['主要诊断名称'] = ''
+            disease_dict['医生名称'] = ''
+            disease_dict['其他诊断1'] = ''
+            disease_dict['其他诊断1编码'] = ''
+            disease_dict['其他诊断2'] = ''
+            disease_dict['其他诊断2编码'] = ''
+            disease_dict['其他诊断3'] = ''
+            disease_dict['是否有新冠肺炎流行病学史'] = ''
+            disease_dict['体格检查描述'] = ''
+            disease_dict['医嘱项目内容'] = ''
+            disease_dict['描述'] = ''
+            disease_dict['主诉'] = ''
+            disease_dict['现病史'] = ''
+            disease_dict['既往史'] = ''
 
-            if 'symptom' in data_json:
-                symptoms += data_json['symptom']
-                for symptom in data_json['symptom']:
-                    rels_symptom.append([disease, symptom])
+            if '就诊号' in data_json:
+                visit_numbers.append(data_json['就诊号'])
+                for visit_number in visit_numbers:
+                    rels_clinic_visit.append([clinic_number, visit_number])
 
-            if 'acompany' in data_json:
-                for acompany in data_json['acompany']:
-                    rels_acompany.append([disease, acompany])
-
-            if 'desc' in data_json:
-                disease_dict['desc'] = data_json['desc']
-
-            if 'prevent' in data_json:
-                disease_dict['prevent'] = data_json['prevent']
-
-            if 'cause' in data_json:
-                disease_dict['cause'] = data_json['cause']
-
-            if 'get_prob' in data_json:
-                disease_dict['get_prob'] = data_json['get_prob']
-
-            if 'easy_get' in data_json:
-                disease_dict['easy_get'] = data_json['easy_get']
-
-            if 'cure_department' in data_json:
-                cure_department = data_json['cure_department']
-                if len(cure_department) == 1:
-                    rels_category.append([disease, cure_department[0]])
-                if len(cure_department) == 2:
-                    big = cure_department[0]
-                    small = cure_department[1]
-                    rels_department.append([small, big])
-                    rels_category.append([disease, small])
-
-                disease_dict['cure_department'] = cure_department
-                departments += cure_department
-
-            if 'cure_way' in data_json:
-                disease_dict['cure_way'] = data_json['cure_way']
-
-            if  'cure_lasttime' in data_json:
-                disease_dict['cure_lasttime'] = data_json['cure_lasttime']
-
-            if 'cured_prob' in data_json:
-                disease_dict['cured_prob'] = data_json['cured_prob']
-
-            if 'common_drug' in data_json:
-                common_drug = data_json['common_drug']
-                for drug in common_drug:
-                    rels_commonddrug.append([disease, drug])
-                drugs += common_drug
-
-            if 'recommand_drug' in data_json:
-                recommand_drug = data_json['recommand_drug']
-                drugs += recommand_drug
-                for drug in recommand_drug:
-                    rels_recommanddrug.append([disease, drug])
-
-            if 'not_eat' in data_json:
-                not_eat = data_json['not_eat']
-                for _not in not_eat:
-                    rels_noteat.append([disease, _not])
-
-                foods += not_eat
-                do_eat = data_json['do_eat']
-                for _do in do_eat:
-                    rels_doeat.append([disease, _do])
-
-                foods += do_eat
-                recommand_eat = data_json['recommand_eat']
-
-                for _recommand in recommand_eat:
-                    rels_recommandeat.append([disease, _recommand])
-                foods += recommand_eat
-
-            if 'check' in data_json:
-                check = data_json['check']
-                for _check in check:
-                    rels_check.append([disease, _check])
-                checks += check
-            if 'drug_detail' in data_json:
-                drug_detail = data_json['drug_detail']
-                producer = [i.split('(')[0] for i in drug_detail]
-                rels_drug_producer += [[i.split('(')[0], i.split('(')[-1].replace(')', '')] for i in drug_detail]
-                producers += producer
             disease_infos.append(disease_dict)
-        return set(drugs), set(foods), set(checks), set(departments), set(producers), set(symptoms), set(diseases), disease_infos,\
-               rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,\
-               rels_symptom, rels_acompany, rels_category
+
+            # if 'acompany' in data_json:
+            #     for acompany in data_json['acompany']:
+            #         rels_acompany.append([disease, acompany])
+            #
+            # if 'desc' in data_json:
+            #     disease_dict['desc'] = data_json['desc']
+            #
+            # if 'prevent' in data_json:
+            #     disease_dict['prevent'] = data_json['prevent']
+            #
+            # if 'cause' in data_json:
+            #     disease_dict['cause'] = data_json['cause']
+            #
+            # if 'get_prob' in data_json:
+            #     disease_dict['get_prob'] = data_json['get_prob']
+            #
+            # if 'easy_get' in data_json:
+            #     disease_dict['easy_get'] = data_json['easy_get']
+            #
+            # if 'cure_department' in data_json:
+            #     cure_department = data_json['cure_department']
+            #     if len(cure_department) == 1:
+            #         rels_category.append([disease, cure_department[0]])
+            #     if len(cure_department) == 2:
+            #         big = cure_department[0]
+            #         small = cure_department[1]
+            #         rels_department.append([small, big])
+            #         rels_category.append([disease, small])
+            #
+            #     disease_dict['cure_department'] = cure_department
+            #     departments += cure_department
+            #
+            # if 'cure_way' in data_json:
+            #     disease_dict['cure_way'] = data_json['cure_way']
+            #
+            # if  'cure_lasttime' in data_json:
+            #     disease_dict['cure_lasttime'] = data_json['cure_lasttime']
+            #
+            # if 'cured_prob' in data_json:
+            #     disease_dict['cured_prob'] = data_json['cured_prob']
+            #
+            # if 'common_drug' in data_json:
+            #     common_drug = data_json['common_drug']
+            #     for drug in common_drug:
+            #         rels_commonddrug.append([disease, drug])
+            #     drugs += common_drug
+            #
+            # if 'recommand_drug' in data_json:
+            #     recommand_drug = data_json['recommand_drug']
+            #     drugs += recommand_drug
+            #     for drug in recommand_drug:
+            #         rels_recommanddrug.append([disease, drug])
+            #
+            # if 'not_eat' in data_json:
+            #     not_eat = data_json['not_eat']
+            #     for _not in not_eat:
+            #         rels_noteat.append([disease, _not])
+            #
+            #     foods += not_eat
+            #     do_eat = data_json['do_eat']
+            #     for _do in do_eat:
+            #         rels_doeat.append([disease, _do])
+            #
+            #     foods += do_eat
+            #     recommand_eat = data_json['recommand_eat']
+            #
+            #     for _recommand in recommand_eat:
+            #         rels_recommandeat.append([disease, _recommand])
+            #     foods += recommand_eat
+            #
+            # if 'check' in data_json:
+            #     check = data_json['check']
+            #     for _check in check:
+            #         rels_check.append([disease, _check])
+            #     checks += check
+            # if 'drug_detail' in data_json:
+            #     drug_detail = data_json['drug_detail']
+            #     producer = [i.split('(')[0] for i in drug_detail]
+            #     rels_drug_producer += [[i.split('(')[0], i.split('(')[-1].replace(')', '')] for i in drug_detail]
+            #     producers += producer
+            # disease_infos.append(disease_dict)
+        # return set(drugs), set(foods), set(checks), set(departments), set(producers), set(symptoms), set(diseases), disease_infos,\
+        #        rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,\
+        #        rels_symptom, rels_acompany, rels_category
+        return set(clinic_numbers), set(visit_numbers), disease_infos, rels_clinic_visit
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -166,11 +211,12 @@ class MedicalGraph:
     def create_diseases_nodes(self, disease_infos):
         count = 0
         for disease_dict in disease_infos:
-            node = Node("Disease", name=disease_dict['name'], desc=disease_dict['desc'],
-                        prevent=disease_dict['prevent'] ,cause=disease_dict['cause'],
-                        easy_get=disease_dict['easy_get'],cure_lasttime=disease_dict['cure_lasttime'],
-                        cure_department=disease_dict['cure_department']
-                        ,cure_way=disease_dict['cure_way'] , cured_prob=disease_dict['cured_prob'])
+            node = Node("门诊号", 门诊号=disease_dict['门诊号'], 就诊号=disease_dict['就诊号'], 科室名称=disease_dict['科室名称'], 患者名称=disease_dict['患者名称'], 身份证号=disease_dict['身份证号'],
+                        患者性别=disease_dict['患者性别'], 年龄=disease_dict['年龄'], 医生工号=disease_dict['医生工号'], 医疗付款方式=disease_dict['医疗付款方式'], 主要诊断编码=disease_dict['主要诊断编码'],
+                        主要诊断描述=disease_dict['主要诊断描述'], 主要诊断名称=disease_dict['主要诊断名称'], 医生名称=disease_dict['医生名称'], 其他诊断1=disease_dict['其他诊断1'], 其他诊断1编码=disease_dict['其他诊断1编码'],
+                        其他诊断2=disease_dict['其他诊断2'], 其他诊断2编码=disease_dict['其他诊断2编码'], 其他诊断3=disease_dict['其他诊断3'], 是否有新冠肺炎流行病学史=disease_dict['是否有新冠肺炎流行病学史'],
+                        体格检查描述=disease_dict['体格检查描述'], 医嘱项目内容=disease_dict['医嘱项目内容'], 描述=disease_dict['描述'], 主诉=disease_dict['主诉'], 现病史=disease_dict['现病史'],
+                        既往史=disease_dict['既往史'])
             self.g.create(node)
             count += 1
             print(count)
@@ -178,36 +224,39 @@ class MedicalGraph:
 
     '''创建知识图谱实体节点类型schema'''
     def create_graphnodes(self):
-        Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos,rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
+        # Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos,rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
+        Clinic_Numbers, Visit_Numbers, disease_infos, rels_clinic_visit = self.read_nodes()
         self.create_diseases_nodes(disease_infos)
-        self.create_node('Drug', Drugs)
-        print(len(Drugs))
-        self.create_node('Food', Foods)
-        print(len(Foods))
-        self.create_node('Check', Checks)
-        print(len(Checks))
-        self.create_node('Department', Departments)
-        print(len(Departments))
-        self.create_node('Producer', Producers)
-        print(len(Producers))
-        self.create_node('Symptom', Symptoms)
+        self.create_node('就诊号', Visit_Numbers)
+        # print(len(Visit_Numbers))
+        # self.create_node('Food', Foods)
+        # print(len(Foods))
+        # self.create_node('Check', Checks)
+        # print(len(Checks))
+        # self.create_node('Department', Departments)
+        # print(len(Departments))
+        # self.create_node('Producer', Producers)
+        # print(len(Producers))
+        # self.create_node('Symptom', Symptoms)
         return
 
 
     '''创建实体关系边'''
     def create_graphrels(self):
-        Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos, rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
-        self.create_relationship('Disease', 'Food', rels_recommandeat, 'recommand_eat', '推荐食谱')
-        self.create_relationship('Disease', 'Food', rels_noteat, 'no_eat', '忌吃')
-        self.create_relationship('Disease', 'Food', rels_doeat, 'do_eat', '宜吃')
-        self.create_relationship('Department', 'Department', rels_department, 'belongs_to', '属于')
-        self.create_relationship('Disease', 'Drug', rels_commonddrug, 'common_drug', '常用药品')
-        self.create_relationship('Producer', 'Drug', rels_drug_producer, 'drugs_of', '生产药品')
-        self.create_relationship('Disease', 'Drug', rels_recommanddrug, 'recommand_drug', '好评药品')
-        self.create_relationship('Disease', 'Check', rels_check, 'need_check', '诊断检查')
-        self.create_relationship('Disease', 'Symptom', rels_symptom, 'has_symptom', '症状')
-        self.create_relationship('Disease', 'Disease', rels_acompany, 'acompany_with', '并发症')
-        self.create_relationship('Disease', 'Department', rels_category, 'belongs_to', '所属科室')
+        # Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos, rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
+        Clinic_Numbers, Visit_Numbers, disease_infos, rels_clinic_visit = self.read_nodes()
+        self.create_relationship('aaa', 'bbb', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
+        # self.create_relationship('Disease', 'Food', rels_recommandeat, 'recommand_eat', '推荐食谱')
+        # self.create_relationship('Disease', 'Food', rels_noteat, 'no_eat', '忌吃')
+        # self.create_relationship('Disease', 'Food', rels_doeat, 'do_eat', '宜吃')
+        # self.create_relationship('Department', 'Department', rels_department, 'belongs_to', '属于')
+        # self.create_relationship('Disease', 'Drug', rels_commonddrug, 'common_drug', '常用药品')
+        # self.create_relationship('Producer', 'Drug', rels_drug_producer, 'drugs_of', '生产药品')
+        # self.create_relationship('Disease', 'Drug', rels_recommanddrug, 'recommand_drug', '好评药品')
+        # self.create_relationship('Disease', 'Check', rels_check, 'need_check', '诊断检查')
+        # self.create_relationship('Disease', 'Symptom', rels_symptom, 'has_symptom', '症状')
+        # self.create_relationship('Disease', 'Disease', rels_acompany, 'acompany_with', '并发症')
+        # self.create_relationship('Disease', 'Department', rels_category, 'belongs_to', '所属科室')
 
     '''创建实体关联边'''
     def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
@@ -265,5 +314,6 @@ class MedicalGraph:
 if __name__ == '__main__':
     handler = MedicalGraph()
     #handler.export_data()
+    # print(handler.read_nodes())
     handler.create_graphnodes()
     handler.create_graphrels()
