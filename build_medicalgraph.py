@@ -22,8 +22,8 @@ class MedicalGraph:
             lis1.append(data)
         return lis1
 
-    '''读取文件1'''
-    def read_nodes_1(self):
+    '''读取文件data_path_1'''
+    def read_nodes(self):
         medical_records = []       # 病历表
         disease_infos_1 = []       # 大实体名称节点
         rels_detail_items = []     # 连接细部项目
@@ -32,18 +32,18 @@ class MedicalGraph:
             data_json = json.loads(data_1)
             medical_record = data_json['name']
             medical_records.append(medical_record)
-            disease_dict_1['name'] = medical_record
+            disease_dict_1['name'] = medical_record                   # 添加病历表到 dict 保留尚未用到
             for medical_record_ in medical_records:
                 rels_detail_items.append(['病历表', medical_record_])  # 节点上的名字与另一个节点上的名字连接
             disease_infos_1.append(disease_dict_1)
         return set(medical_records), disease_infos_1, rels_detail_items
 
-    '''读取文件'''
-    def read_nodes(self):
+    '''读取文件data_path'''
+    def read_nodes_1(self):
         # 共７类节点
         clinic_numbers = []      # 门诊号
         visit_numbers = []       # 就诊号
-        department_name = []    # 科室名称
+        department_names = []    # 科室名称
         patient_name = []       # 患者名称
         id_number = []          # 身份证号
         patient_gender = []     # 患者性别
@@ -78,9 +78,9 @@ class MedicalGraph:
 
 
         # 构建节点实体关系
-        rels_clinic = [] # 大门诊号-门诊号
-        rels_clinic_visit = []  # 门诊号-就诊号关系
-        rels_department = [] #　科室－科室关系
+        rels_clinic = [] # 门诊号(大节点名称)-门诊号(数字) 关系
+        rels_clinic_visit = []  # 就诊号(大节点名称)-就诊号(数字) 关系
+        rels_department = [] #　科室(大节点名称)－科室(细部科室名称) 关系
         rels_noteat = [] # 疾病－忌吃食物关系
         rels_doeat = [] # 疾病－宜吃食物关系
         rels_recommandeat = [] # 疾病－推荐吃食物关系
@@ -95,12 +95,12 @@ class MedicalGraph:
 
 
         count = 0
-        for data in open(self.data_path, 'r', encoding='utf-8'): # 加入 encoding='utf-8'才不会报错
+        for data in open(self.data_path, 'r', encoding='utf-8'):    # 加入 encoding='utf-8'才不会报错
             disease_dict = {}
             count += 1
             # print(count)
             data_json = json.loads(data)
-            # print(disease_dict)
+            print(data_json)
             disease_dict['门诊号'] = ''
             disease_dict['就诊号'] = ''
             disease_dict['科室名称'] = ''
@@ -128,15 +128,25 @@ class MedicalGraph:
             disease_dict['既往史'] = ''
 
             if '门诊号' in data_json:
-                clinic_numbers.append(data_json['门诊号'])           # 添加门诊号
-                disease_dict['门诊号'] = data_json['门诊号']          # 添加门诊号到 dict
+                clinic_number = data_json['门诊号']
+                clinic_numbers.append(clinic_number)           # 添加门诊号
+                disease_dict['门诊号'] = clinic_number          # 添加门诊号到 dict 保留尚未用到
                 for clinic_number in clinic_numbers:
                     rels_clinic.append(['门诊号', clinic_number])
 
-            # if '就诊号' in data_json:
-            #     visit_numbers.append(data_json['就诊号'])
-            #     for visit_number in visit_numbers:
-            #         rels_clinic_visit.append([clinic_number, visit_number])
+            if '就诊号' in data_json:
+                visit_number = data_json['就诊号']
+                visit_numbers.append(visit_number)
+                disease_dict['就诊号'] = visit_number
+                for visit_number_ in visit_numbers:
+                    rels_clinic_visit.append(['就诊号', visit_number_])
+
+            if '科室名称' in data_json:
+                department_name = data_json['科室名称']
+                department_names.append(department_name)
+                disease_dict['科室名称'] = department_name
+                for department_name_ in department_names:
+                    rels_department.append(['科室名称', department_name_])
 
             disease_infos.append(disease_dict)
 
@@ -225,7 +235,7 @@ class MedicalGraph:
         #        rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,\
         #        rels_symptom, rels_acompany, rels_category
         # return set(clinic_numbers), set(visit_numbers), disease_infos, rels_clinic_visit
-        return set(clinic_numbers), disease_infos, rels_clinic
+        return set(clinic_numbers), set(visit_numbers), set(department_names), disease_infos, rels_clinic, rels_clinic_visit, rels_department
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -256,16 +266,13 @@ class MedicalGraph:
     '''创建知识图谱实体节点类型schema'''
     def create_graphnodes(self):
         # Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos,rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
-        # Clinic_Numbers, Visit_Numbers, disease_infos, rels_clinic_visit = self.read_nodes()
-        Clinic_Numbers, disease_infos, rels_clinic = self.read_nodes()
-        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes_1()
-        # self.create_diseases_nodes(disease_infos_1)
+        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
+        Clinic_numbers, Visit_numbers, Department_names, disease_infos, rels_clinic, rels_clinic_visit, rels_department = self.read_nodes_1()
         self.create_node("总项目", ['病历表'])
         self.create_node("细分项目", Medical_Records)
-        # self.create_node('门诊号', Clinic_Numbers)
-        # self.create_node('就诊号', Visit_Numbers)
-        # print(len(Visit_Numbers))
-        # self.create_node('Food', Foods)
+        self.create_node('门诊号', Clinic_numbers)
+        self.create_node('就诊号', Visit_numbers)
+        self.create_node('科室名称', Department_names)
         # print(len(Foods))
         # self.create_node('Check', Checks)
         # print(len(Checks))
@@ -281,12 +288,12 @@ class MedicalGraph:
     def create_graphrels(self):
         # Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos, rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug,rels_symptom, rels_acompany, rels_category = self.read_nodes()
         # Clinic_Numbers, Visit_Numbers, disease_infos, rels_clinic_visit = self.read_nodes()
-        # Clinic_Numbers, disease_infos, rels_clinic = self.read_nodes()
-        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes_1()
-        self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项目', '细分项目')
-        # self.create_relationship('大门诊号', '门诊号', rels_clinic, '门诊号码', '门诊号码唯一ID')
-        # self.create_relationship('门诊号', '就诊号', rels_clinic, '每次看病的就诊号', '就诊记录')
-        # self.create_relationship('Disease', 'Food', rels_recommandeat, 'recommand_eat', '推荐食谱')
+        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
+        Clinic_numbers, Visit_numbers, Department_names, disease_infos, rels_clinic, rels_clinic_visit, rels_department = self.read_nodes_1()
+        self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项', '细分项目')
+        self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
+        self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
+        self.create_relationship('细分项目', '科室名称', rels_department, '科室名称', '科室名称')
         # self.create_relationship('Disease', 'Food', rels_noteat, 'no_eat', '忌吃')
         # self.create_relationship('Disease', 'Food', rels_doeat, 'do_eat', '宜吃')
         # self.create_relationship('Department', 'Department', rels_department, 'belongs_to', '属于')
@@ -354,6 +361,5 @@ class MedicalGraph:
 if __name__ == '__main__':
     handler = MedicalGraph()
     #handler.export_data()
-    # print(handler.read_nodes())
     handler.create_graphnodes()
     handler.create_graphrels()
