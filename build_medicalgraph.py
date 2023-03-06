@@ -221,49 +221,56 @@ class MedicalGraph:
 
             if '其他诊断1' in data_json:
                 other_diagnoses_1 = data_json['其他诊断1']
-                other_diagnoses_1s.append(other_diagnoses_1)
+                other_diagnoses_1s += other_diagnoses_1
+                # other_diagnoses_1s.append(other_diagnoses_1)
                 disease_dict['其他诊断1'] = other_diagnoses_1
                 for other_diagnoses_1_ in other_diagnoses_1s:
                     rels_other_diagnoses_1.append(['其他诊断1', other_diagnoses_1_])
 
             if '其他诊断1编码' in data_json:
                 other_diagnosis_1_code = data_json['其他诊断1编码']
-                other_diagnosis_1_codes.append(other_diagnosis_1_code)
+                other_diagnosis_1_codes += other_diagnosis_1_code
+                # other_diagnosis_1_codes.append(other_diagnosis_1_code)
                 disease_dict['其他诊断1编码'] = other_diagnosis_1_code
                 for other_diagnosis_1_code_ in other_diagnosis_1_codes:
                     rels_other_diagnosis_1_code.append(['其他诊断1编码', other_diagnosis_1_code_])
 
             if '其他诊断2' in data_json:
                 other_diagnoses_2 = data_json['其他诊断2']
-                other_diagnoses_2s.append(other_diagnoses_2)
+                other_diagnoses_2s += other_diagnoses_2
+                # other_diagnoses_2s.append(other_diagnoses_2)
                 disease_dict['其他诊断2'] = other_diagnoses_2
                 for other_diagnoses_2_ in other_diagnoses_2s:
                     rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
 
             if '其他诊断2编码' in data_json:
                 other_diagnosis_2_code = data_json['其他诊断2编码']
-                other_diagnosis_2_codes.append(other_diagnosis_2_code)
+                other_diagnosis_2_codes += other_diagnosis_2_code
+                # other_diagnosis_2_codes.append(other_diagnosis_2_code)
                 disease_dict['其他诊断2编码'] = other_diagnosis_2_code
                 for other_diagnosis_2_code_ in other_diagnosis_2_codes:
                     rels_other_diagnosis_2_code.append(['其他诊断2编码', other_diagnosis_2_code_])
 
             if '其他诊断3' in data_json:
                 other_diagnoses_3 = data_json['其他诊断3']
-                other_diagnoses_3s.append(other_diagnoses_3)
+                other_diagnoses_3s += other_diagnoses_3
+                # other_diagnoses_3s.append(other_diagnoses_3)
                 disease_dict['其他诊断3'] = other_diagnoses_3
                 for other_diagnoses_3_ in other_diagnoses_3s:
                     rels_other_diagnoses_3.append(['其他诊断3', other_diagnoses_3_])
 
             if '其他诊断3编码' in data_json:
                 other_diagnosis_3_code = data_json['其他诊断3编码']
-                other_diagnosis_3_codes.append(other_diagnosis_3_code)
+                other_diagnosis_3_codes += other_diagnosis_3_code
+                # other_diagnosis_3_codes.append(other_diagnosis_3_code)
                 disease_dict['其他诊断3编码'] = other_diagnosis_3_code
                 for other_diagnosis_3_code_ in other_diagnosis_3_codes:
                     rels_other_diagnosis_3_code.append(['其他诊断3编码', other_diagnosis_3_code_])
             ##
             if '是否有新冠肺炎流行病学史' in data_json:
                 epidemiological_history_of_convid_19 = data_json['是否有新冠肺炎流行病学史']
-                epidemiological_history_of_convid_19s.append(epidemiological_history_of_convid_19)
+                epidemiological_history_of_convid_19s += epidemiological_history_of_convid_19
+                # epidemiological_history_of_convid_19s.append(epidemiological_history_of_convid_19)
                 disease_dict['是否有新冠肺炎流行病学史'] = epidemiological_history_of_convid_19
                 for epidemiological_history_of_convid_19_ in epidemiological_history_of_convid_19s:
                     rels_epidemiological_history_of_convid_19.append(['是否有新冠肺炎流行病学史', epidemiological_history_of_convid_19_])
