@@ -61,9 +61,9 @@ class MedicalGraph:
         other_diagnosis_1_codes = []                 # 其他诊断1编码
         other_diagnoses_2s = []                      # 其他诊断2
         other_diagnosis_2_codes = []                 # 其他诊断2编码
-        other_diagnoses_3 = []                      # 其他诊断3
-        other_diagnosis_3_code = []                 # 其他诊断3编码
-        epidemiological_history_of_convid_19 = []   # 是否有新冠肺炎流行病学史
+        other_diagnoses_3s = []                      # 其他诊断3
+        other_diagnosis_3_codes = []                 # 其他诊断3编码
+        epidemiological_history_of_convid_19s = []   # 是否有新冠肺炎流行病学史
         physical_exam_description = []              # 体格检查描述
         contents_of_doctors_orders = []             # 医嘱项目内容
         describe = []                               # 描述
@@ -73,23 +73,26 @@ class MedicalGraph:
 
 
         # 构建节点实体关系
-        rels_clinic = []                            # 门诊号(大节点名称)-门诊号(数字) 关系
-        rels_clinic_visit = []                      # 就诊号(大节点名称)-就诊号(数字) 关系
-        rels_department = []                        #　科室(大节点名称)－科室(细部科室名称) 关系
-        rels_patient_name = []                      # 疾病(大节点名称)－疾病(细部疾病名称) 关系
-        rels_id_number = []                         # 身份证号(大节点名称)－身份证号(个人身份证号码) 关系
-        rels_patient_gender = []                    # 患者性别(大节点名称)－患者性别(细分性别，可能男女中性?) 关系
-        rels_age = []                               # 年龄(大节点名称)－年龄(数字) 关系
-        rels_doctor_id = []                         # 医生功号(大节点名称)－医生功号(数字) 关系
-        rels_medical_payment_method = []            # 医疗付款方式(大节点名称)－医疗付款方式(自费或社保)检查关系
-        rels_main_diagnostic_code = []              # 主要诊断编码(大节点名称)－主要诊断编码(数字) 关系
-        rels_main_diagnosis_description = []        # 主要诊断描述(大节点名称)－主要诊断描述(内容) 关系
-        rels_main_diagnosis_name = []               # 主要诊断名称(大节点名称)－主要诊断名称(内容) 关系
-        rels_doctor_name = []                       #　医生名称(大节点名称)－医生名称(名字) 关系
-        rels_other_diagnoses_1 = []                 #　其他诊断1(大节点名称)－其他诊断1(内容) 关系
-        rels_other_diagnosis_1_code = []            #　其他诊断1编码(大节点名称)－其他诊断1编码(数字) 关系
-        rels_other_diagnoses_2 = []                 #　其他诊断2(大节点名称)－其他诊断2(内容) 关系
-        rels_other_diagnosis_2_code = []                 #　其他诊断2编码(大节点名称)－其他诊断2编码(数字) 关系
+        rels_clinic = []                                            # 门诊号(大节点名称)-门诊号(数字) 关系
+        rels_clinic_visit = []                                      # 就诊号(大节点名称)-就诊号(数字) 关系
+        rels_department = []                                        #　科室(大节点名称)－科室(细部科室名称) 关系
+        rels_patient_name = []                                      # 疾病(大节点名称)－疾病(细部疾病名称) 关系
+        rels_id_number = []                                         # 身份证号(大节点名称)－身份证号(个人身份证号码) 关系
+        rels_patient_gender = []                                    # 患者性别(大节点名称)－患者性别(细分性别，可能男女中性?) 关系
+        rels_age = []                                               # 年龄(大节点名称)－年龄(数字) 关系
+        rels_doctor_id = []                                         # 医生功号(大节点名称)－医生功号(数字) 关系
+        rels_medical_payment_method = []                            # 医疗付款方式(大节点名称)－医疗付款方式(自费或社保)检查关系
+        rels_main_diagnostic_code = []                              # 主要诊断编码(大节点名称)－主要诊断编码(数字) 关系
+        rels_main_diagnosis_description = []                        # 主要诊断描述(大节点名称)－主要诊断描述(内容) 关系
+        rels_main_diagnosis_name = []                               # 主要诊断名称(大节点名称)－主要诊断名称(内容) 关系
+        rels_doctor_name = []                                       #　医生名称(大节点名称)－医生名称(名字) 关系
+        rels_other_diagnoses_1 = []                                 #　其他诊断1(大节点名称)－其他诊断1(内容) 关系
+        rels_other_diagnosis_1_code = []                            #　其他诊断1编码(大节点名称)－其他诊断1编码(数字) 关系
+        rels_other_diagnoses_2 = []                                 #　其他诊断2(大节点名称)－其他诊断2(内容) 关系
+        rels_other_diagnosis_2_code = []                            #　其他诊断2编码(大节点名称)－其他诊断2编码(数字) 关系
+        rels_other_diagnoses_3 = []                                 #　其他诊断3(大节点名称)－其他诊断3(内容) 关系
+        rels_other_diagnosis_3_code = []                            #　其他诊断3编码(大节点名称)－其他诊断3编码(数字) 关系
+        rels_epidemiological_history_of_convid_19 = []              #　其他诊断3编码(大节点名称)－其他诊断3编码(数字) 关系
 
 
         count = 0
@@ -243,27 +246,27 @@ class MedicalGraph:
                 disease_dict['其他诊断2编码'] = other_diagnosis_2_code
                 for other_diagnosis_2_code_ in other_diagnosis_2_codes:
                     rels_other_diagnosis_2_code.append(['其他诊断2编码', other_diagnosis_2_code_])
+
+            if '其他诊断3' in data_json:
+                other_diagnoses_3 = data_json['其他诊断3']
+                other_diagnoses_3s.append(other_diagnoses_3)
+                disease_dict['其他诊断3'] = other_diagnoses_3
+                for other_diagnoses_3_ in other_diagnoses_3s:
+                    rels_other_diagnoses_3.append(['其他诊断3', other_diagnoses_3_])
+
+            if '其他诊断3编码' in data_json:
+                other_diagnosis_3_code = data_json['其他诊断3编码']
+                other_diagnosis_3_codes.append(other_diagnosis_3_code)
+                disease_dict['其他诊断3编码'] = other_diagnosis_3_code
+                for other_diagnosis_3_code_ in other_diagnosis_3_codes:
+                    rels_other_diagnosis_3_code.append(['其他诊断3编码', other_diagnosis_3_code_])
             ##
-            if '其他诊断2' in data_json:
-                other_diagnoses_2 = data_json['其他诊断2']
-                other_diagnoses_2s.append(other_diagnoses_2)
-                disease_dict['其他诊断2'] = other_diagnoses_2
-                for other_diagnoses_2_ in other_diagnoses_2s:
-                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
-
-            if '其他诊断2' in data_json:
-                other_diagnoses_2 = data_json['其他诊断2']
-                other_diagnoses_2s.append(other_diagnoses_2)
-                disease_dict['其他诊断2'] = other_diagnoses_2
-                for other_diagnoses_2_ in other_diagnoses_2s:
-                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
-
-            if '其他诊断2' in data_json:
-                other_diagnoses_2 = data_json['其他诊断2']
-                other_diagnoses_2s.append(other_diagnoses_2)
-                disease_dict['其他诊断2'] = other_diagnoses_2
-                for other_diagnoses_2_ in other_diagnoses_2s:
-                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
+            if '是否有新冠肺炎流行病学史' in data_json:
+                epidemiological_history_of_convid_19 = data_json['是否有新冠肺炎流行病学史']
+                epidemiological_history_of_convid_19s.append(epidemiological_history_of_convid_19)
+                disease_dict['是否有新冠肺炎流行病学史'] = epidemiological_history_of_convid_19
+                for epidemiological_history_of_convid_19_ in epidemiological_history_of_convid_19s:
+                    rels_epidemiological_history_of_convid_19.append(['是否有新冠肺炎流行病学史', epidemiological_history_of_convid_19_])
 
             disease_infos.append(disease_dict)
 
@@ -322,9 +325,9 @@ class MedicalGraph:
             #     producers += producer
             # disease_infos.append(disease_dict)
         return set(clinic_numbers), set(visit_numbers), set(department_names), set(patient_names), set(id_numbers), set(patient_genders), set(ages), set(doctor_ids), set(medical_payment_methods), set(main_diagnostic_codes), set(main_diagnosis_descriptions), set(main_diagnosis_names), \
-               set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), disease_infos, rels_clinic, rels_clinic_visit, \
+               set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), set(other_diagnoses_3s), set(other_diagnosis_3_codes), set(epidemiological_history_of_convid_19s), disease_infos, rels_clinic, rels_clinic_visit, \
                rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, \
-               rels_other_diagnoses_2, rels_other_diagnosis_2_code
+               rels_other_diagnoses_2, rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -356,9 +359,9 @@ class MedicalGraph:
     def create_graphnodes(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
-        Other_diagnosis_2_codes, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
-        rels_id_number, rels_patient_gender, rels_age, \
-        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, rels_other_diagnosis_2_code = self.read_nodes_1()
+        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
+        rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19 = self.read_nodes_1()
         self.create_node("总项目", ['病历表'])
         self.create_node("细分项目", Medical_Records)
         self.create_node('门诊号', Clinic_numbers)
@@ -378,6 +381,9 @@ class MedicalGraph:
         self.create_node('其他诊断1编码', Other_diagnosis_1_codes)
         self.create_node('其他诊断2', Other_diagnoses_2s)
         self.create_node('其他诊断2编码', Other_diagnosis_2_codes)
+        self.create_node('其他诊断3', Other_diagnoses_3s)
+        self.create_node('其他诊断3编码', Other_diagnosis_3_codes)
+        self.create_node('是否有新冠肺炎流行病学史', Epidemiological_history_of_convid_19s)
         return
 
 
@@ -385,9 +391,9 @@ class MedicalGraph:
     def create_graphrels(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
-        Other_diagnosis_2_codes, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
-        rels_id_number, rels_patient_gender, rels_age, \
-        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, rels_other_diagnosis_2_code = self.read_nodes_1()
+        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
+        rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19 = self.read_nodes_1()
         self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项', '细分项目')
         self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
         self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
@@ -405,7 +411,10 @@ class MedicalGraph:
         self.create_relationship('细分项目', '其他诊断1', rels_other_diagnoses_1, '其他诊断1', '其他诊断1')
         self.create_relationship('细分项目', '其他诊断1编码', rels_other_diagnosis_1_code, '其他诊断1编码', '其他诊断1编码')
         self.create_relationship('细分项目', '其他诊断2', rels_other_diagnoses_2, '其他诊断2', '其他诊断2')
-        self.create_relationship('细分项目', '其他诊断2编码', Other_diagnosis_2_codes, '其他诊断2编码', '其他诊断2编码')
+        self.create_relationship('细分项目', '其他诊断2编码', rels_other_diagnosis_2_code, '其他诊断2编码', '其他诊断2编码')
+        self.create_relationship('细分项目', '其他诊断3', rels_other_diagnoses_3, '其他诊断3', '其他诊断3')
+        self.create_relationship('细分项目', '其他诊断3编码', rels_other_diagnosis_3_code, '其他诊断3编码', '其他诊断3编码')
+        self.create_relationship('细分项目', '是否有新冠肺炎流行病学史', rels_epidemiological_history_of_convid_19, '是否有新冠肺炎流行病学史', '是否有新冠肺炎流行病学史')
 
     '''创建实体关联边'''
     def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
