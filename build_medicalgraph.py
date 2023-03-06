@@ -56,11 +56,11 @@ class MedicalGraph:
         main_diagnostic_codes = []                   # 主要诊断编码
         main_diagnosis_descriptions = []             # 主要诊断描述
         main_diagnosis_names = []                    # 主要诊断名称
-        doctor_name = []                            # 医生名称
-        other_diagnoses_1 = []                      # 其他诊断1
-        other_diagnosis_1_code = []                 # 其他诊断1编码
-        other_diagnoses_2 = []                      # 其他诊断2
-        other_diagnosis_2_code = []                 # 其他诊断2编码
+        doctor_names = []                            # 医生名称
+        other_diagnoses_1s = []                      # 其他诊断1
+        other_diagnosis_1_codes = []                 # 其他诊断1编码
+        other_diagnoses_2s = []                      # 其他诊断2
+        other_diagnosis_2_codes = []                 # 其他诊断2编码
         other_diagnoses_3 = []                      # 其他诊断3
         other_diagnosis_3_code = []                 # 其他诊断3编码
         epidemiological_history_of_convid_19 = []   # 是否有新冠肺炎流行病学史
@@ -85,7 +85,11 @@ class MedicalGraph:
         rels_main_diagnostic_code = []              # 主要诊断编码(大节点名称)－主要诊断编码(数字) 关系
         rels_main_diagnosis_description = []        # 主要诊断描述(大节点名称)－主要诊断描述(内容) 关系
         rels_main_diagnosis_name = []               # 主要诊断名称(大节点名称)－主要诊断名称(内容) 关系
-        rels_category = [] #　疾病与科室之间的关系
+        rels_doctor_name = []                       #　医生名称(大节点名称)－医生名称(名字) 关系
+        rels_other_diagnoses_1 = []                 #　其他诊断1(大节点名称)－其他诊断1(内容) 关系
+        rels_other_diagnosis_1_code = []            #　其他诊断1编码(大节点名称)－其他诊断1编码(数字) 关系
+        rels_other_diagnoses_2 = []                 #　其他诊断2(大节点名称)－其他诊断2(内容) 关系
+        rels_other_diagnosis_2_code = []                 #　其他诊断2编码(大节点名称)－其他诊断2编码(数字) 关系
 
 
         count = 0
@@ -205,6 +209,62 @@ class MedicalGraph:
                 for main_diagnosis_name_ in main_diagnosis_names:
                     rels_main_diagnosis_name.append(['主要诊断名称', main_diagnosis_name_])
 
+            if '医生名称' in data_json:
+                doctor_name = data_json['医生名称']
+                doctor_names.append(doctor_name)
+                disease_dict['医生名称'] = doctor_name
+                for doctor_name_ in doctor_names:
+                    rels_doctor_name.append(['医生名称', doctor_name_])
+
+            if '其他诊断1' in data_json:
+                other_diagnoses_1 = data_json['其他诊断1']
+                other_diagnoses_1s.append(other_diagnoses_1)
+                disease_dict['其他诊断1'] = other_diagnoses_1
+                for other_diagnoses_1_ in other_diagnoses_1s:
+                    rels_other_diagnoses_1.append(['其他诊断1', other_diagnoses_1_])
+
+            if '其他诊断1编码' in data_json:
+                other_diagnosis_1_code = data_json['其他诊断1编码']
+                other_diagnosis_1_codes.append(other_diagnosis_1_code)
+                disease_dict['其他诊断1编码'] = other_diagnosis_1_code
+                for other_diagnosis_1_code_ in other_diagnosis_1_codes:
+                    rels_other_diagnosis_1_code.append(['其他诊断1编码', other_diagnosis_1_code_])
+
+            if '其他诊断2' in data_json:
+                other_diagnoses_2 = data_json['其他诊断2']
+                other_diagnoses_2s.append(other_diagnoses_2)
+                disease_dict['其他诊断2'] = other_diagnoses_2
+                for other_diagnoses_2_ in other_diagnoses_2s:
+                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
+
+            if '其他诊断2编码' in data_json:
+                other_diagnosis_2_code = data_json['其他诊断2编码']
+                other_diagnosis_2_codes.append(other_diagnosis_2_code)
+                disease_dict['其他诊断2编码'] = other_diagnosis_2_code
+                for other_diagnosis_2_code_ in other_diagnosis_2_codes:
+                    rels_other_diagnosis_2_code.append(['其他诊断2编码', other_diagnosis_2_code_])
+            ##
+            if '其他诊断2' in data_json:
+                other_diagnoses_2 = data_json['其他诊断2']
+                other_diagnoses_2s.append(other_diagnoses_2)
+                disease_dict['其他诊断2'] = other_diagnoses_2
+                for other_diagnoses_2_ in other_diagnoses_2s:
+                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
+
+            if '其他诊断2' in data_json:
+                other_diagnoses_2 = data_json['其他诊断2']
+                other_diagnoses_2s.append(other_diagnoses_2)
+                disease_dict['其他诊断2'] = other_diagnoses_2
+                for other_diagnoses_2_ in other_diagnoses_2s:
+                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
+
+            if '其他诊断2' in data_json:
+                other_diagnoses_2 = data_json['其他诊断2']
+                other_diagnoses_2s.append(other_diagnoses_2)
+                disease_dict['其他诊断2'] = other_diagnoses_2
+                for other_diagnoses_2_ in other_diagnoses_2s:
+                    rels_other_diagnoses_2.append(['其他诊断2', other_diagnoses_2_])
+
             disease_infos.append(disease_dict)
 
             #
@@ -262,8 +322,9 @@ class MedicalGraph:
             #     producers += producer
             # disease_infos.append(disease_dict)
         return set(clinic_numbers), set(visit_numbers), set(department_names), set(patient_names), set(id_numbers), set(patient_genders), set(ages), set(doctor_ids), set(medical_payment_methods), set(main_diagnostic_codes), set(main_diagnosis_descriptions), set(main_diagnosis_names), \
-               disease_infos, rels_clinic, rels_clinic_visit, \
-               rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name
+               set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), disease_infos, rels_clinic, rels_clinic_visit, \
+               rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, \
+               rels_other_diagnoses_2, rels_other_diagnosis_2_code
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -294,9 +355,10 @@ class MedicalGraph:
     '''创建知识图谱实体节点类型schema'''
     def create_graphnodes(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
-        Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
+        Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
+        Other_diagnosis_2_codes, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
         rels_id_number, rels_patient_gender, rels_age, \
-        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name = self.read_nodes_1()
+        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, rels_other_diagnosis_2_code = self.read_nodes_1()
         self.create_node("总项目", ['病历表'])
         self.create_node("细分项目", Medical_Records)
         self.create_node('门诊号', Clinic_numbers)
@@ -311,15 +373,21 @@ class MedicalGraph:
         self.create_node('主要诊断编码', Main_diagnostic_codes)
         self.create_node('主要诊断描述', Main_diagnosis_descriptions)
         self.create_node('主要诊断名称', Main_diagnosis_names)
+        self.create_node('医生名称', Doctor_names)
+        self.create_node('其他诊断1', Other_diagnoses_1s)
+        self.create_node('其他诊断1编码', Other_diagnosis_1_codes)
+        self.create_node('其他诊断2', Other_diagnoses_2s)
+        self.create_node('其他诊断2编码', Other_diagnosis_2_codes)
         return
 
 
     '''创建实体关系边'''
     def create_graphrels(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
-        Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
+        Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
+        Other_diagnosis_2_codes, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
         rels_id_number, rels_patient_gender, rels_age, \
-        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name = self.read_nodes_1()
+        rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, rels_other_diagnosis_2_code = self.read_nodes_1()
         self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项', '细分项目')
         self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
         self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
@@ -333,7 +401,11 @@ class MedicalGraph:
         self.create_relationship('细分项目', '主要诊断编码', rels_main_diagnostic_code, '主要诊断编码', '主要诊断编码')
         self.create_relationship('细分项目', '主要诊断描述', rels_main_diagnosis_description, '主要诊断描述', '主要诊断描述')
         self.create_relationship('细分项目', '主要诊断名称', rels_main_diagnosis_name, '主要诊断名称', '主要诊断名称')
-        # self.create_relationship('Disease', 'Department', rels_category, 'belongs_to', '所属科室')
+        self.create_relationship('细分项目', '医生名称', rels_doctor_name, '医生名', '医生名称')
+        self.create_relationship('细分项目', '其他诊断1', rels_other_diagnoses_1, '其他诊断1', '其他诊断1')
+        self.create_relationship('细分项目', '其他诊断1编码', rels_other_diagnosis_1_code, '其他诊断1编码', '其他诊断1编码')
+        self.create_relationship('细分项目', '其他诊断2', rels_other_diagnoses_2, '其他诊断2', '其他诊断2')
+        self.create_relationship('细分项目', '其他诊断2编码', Other_diagnosis_2_codes, '其他诊断2编码', '其他诊断2编码')
 
     '''创建实体关联边'''
     def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
