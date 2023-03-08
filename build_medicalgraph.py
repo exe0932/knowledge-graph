@@ -100,6 +100,7 @@ class MedicalGraph:
         rels_history_of_present_illness = []                        #　现病史(大节点名称)－现病史(内容) 关系
         rels_past_history = []                                      #　既往史(大节点名称)－既往史(内容) 关系
 
+        # Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
 
         count = 0
         for data in open(self.data_path, 'r', encoding='utf-8'):    # 加入 encoding='utf-8'才不会报错
@@ -107,7 +108,6 @@ class MedicalGraph:
             count += 1
             # print(count)
             data_json = json.loads(data)
-            print(data_json)
             disease_dict['门诊号'] = ''
             disease_dict['就诊号'] = ''
             disease_dict['科室名称'] = ''
@@ -331,7 +331,7 @@ class MedicalGraph:
 
 
             disease_infos.append(disease_dict)
-
+        print("1",disease_infos)
         return set(clinic_numbers), set(visit_numbers), set(department_names), set(patient_names), set(id_numbers), set(patient_genders), set(ages), set(doctor_ids), set(medical_payment_methods), set(main_diagnostic_codes), set(main_diagnosis_descriptions), set(main_diagnosis_names), \
                set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), set(other_diagnoses_3s), set(other_diagnosis_3_codes), set(epidemiological_history_of_convid_19s), set(physical_exam_descriptions), \
                set(contents_of_doctors_orders), set(describes), set(main_complaints), set(history_of_present_illnesses), set(past_historys), disease_infos, rels_clinic, rels_clinic_visit, \
