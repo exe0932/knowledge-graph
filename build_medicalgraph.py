@@ -66,10 +66,10 @@ class MedicalGraph:
         epidemiological_history_of_convid_19s = []   # 是否有新冠肺炎流行病学史
         physical_exam_descriptions = []              # 体格检查描述
         contents_of_doctors_orders = []              # 医嘱项目内容
-        describe = []                               # 描述
-        main_complaint = []                         # 主诉
-        history_of_present_illness = []             # 现病史
-        past_history = []                           # 既往史
+        describes = []                               # 描述
+        main_complaints = []                         # 主诉
+        history_of_present_illnesses = []            # 现病史
+        past_historys = []                           # 既往史
 
 
         # 构建节点实体关系
@@ -95,6 +95,10 @@ class MedicalGraph:
         rels_epidemiological_history_of_convid_19 = []              #　其他诊断3编码(大节点名称)－其他诊断3编码(数字) 关系
         rels_ephysical_exam_description = []                        #　体格检查描述(大节点名称)－体格检查描述(内容) 关系
         rels_contents_of_doctors_order = []                         #　医嘱项目内容(大节点名称)－医嘱项目内容(内容) 关系
+        rels_describe = []                                          #　描述(大节点名称)－描述(内容) 关系
+        rels_main_complaint = []                                    #　主诉(大节点名称)－主诉(内容) 关系
+        rels_history_of_present_illness = []                        #　现病史(大节点名称)－现病史(内容) 关系
+        rels_past_history = []                                      #　既往史(大节点名称)－既往史(内容) 关系
 
 
         count = 0
@@ -292,72 +296,48 @@ class MedicalGraph:
                 disease_dict['医嘱项目内容'] = contents_of_doctors_order
                 for contents_of_doctors_order_ in contents_of_doctors_orders:
                     rels_contents_of_doctors_order.append(['医嘱项目内容', contents_of_doctors_order_])
-            ##
-            if '其他诊断3编码' in data_json:
-                other_diagnosis_3_code = data_json['其他诊断3编码']
-                other_diagnosis_3_codes += other_diagnosis_3_code
-                # other_diagnosis_3_codes.append(other_diagnosis_3_code)
-                disease_dict['其他诊断3编码'] = other_diagnosis_3_code
-                for other_diagnosis_3_code_ in other_diagnosis_3_codes:
-                    rels_other_diagnosis_3_code.append(['其他诊断3编码', other_diagnosis_3_code_])
 
-            if '其他诊断3编码' in data_json:
-                other_diagnosis_3_code = data_json['其他诊断3编码']
-                other_diagnosis_3_codes += other_diagnosis_3_code
+            if '描述' in data_json:
+                describe = data_json['描述']
+                describes += describe
                 # other_diagnosis_3_codes.append(other_diagnosis_3_code)
-                disease_dict['其他诊断3编码'] = other_diagnosis_3_code
-                for other_diagnosis_3_code_ in other_diagnosis_3_codes:
-                    rels_other_diagnosis_3_code.append(['其他诊断3编码', other_diagnosis_3_code_])
+                disease_dict['描述'] = describe
+                for describe_ in describes:
+                    rels_describe.append(['描述', describe_])
+
+            if '主诉' in data_json:
+                main_complaint = data_json['主诉']
+                # other_diagnosis_3_codes += other_diagnosis_3_code
+                main_complaints.append(main_complaint)
+                disease_dict['主诉'] = main_complaint
+                for main_complaint_ in main_complaints:
+                    rels_main_complaint.append(['主诉', main_complaint_])
+
+            if '现病史' in data_json:
+                history_of_present_illness = data_json['现病史']
+                history_of_present_illnesses += history_of_present_illness
+                # history_of_present_illnesses.append(main_complaint)
+                disease_dict['现病史'] = history_of_present_illness
+                for history_of_present_illness_ in history_of_present_illnesses:
+                    rels_history_of_present_illness.append(['现病史', history_of_present_illness_])
+            ##
+            if '既往史' in data_json:
+                past_history = data_json['既往史']
+                past_historys += past_history
+                # main_complaints.append(main_complaint)
+                disease_dict['既往史'] = past_history
+                for past_history_ in past_historys:
+                    rels_past_history.append(['既往史', past_history_])
+
 
             disease_infos.append(disease_dict)
 
-            #
-            # if 'cure_department' in data_json:
-            #     cure_department = data_json['cure_department']
-            #     if len(cure_department) == 1:
-            #         rels_category.append([disease, cure_department[0]])
-            #     if len(cure_department) == 2:
-            #         big = cure_department[0]
-            #         small = cure_department[1]
-            #         rels_department.append([small, big])
-            #         rels_category.append([disease, small])
-            #
-            #     disease_dict['cure_department'] = cure_department
-            #     departments += cure_department
-            #
-            # if 'not_eat' in data_json:
-            #     not_eat = data_json['not_eat']
-            #     for _not in not_eat:
-            #         rels_noteat.append([disease, _not])
-            #
-            #     foods += not_eat
-            #     do_eat = data_json['do_eat']
-            #     for _do in do_eat:
-            #         rels_doeat.append([disease, _do])
-            #
-            #     foods += do_eat
-            #     recommand_eat = data_json['recommand_eat']
-            #
-            #     for _recommand in recommand_eat:
-            #         rels_recommandeat.append([disease, _recommand])
-            #     foods += recommand_eat
-            #
-            # if 'check' in data_json:
-            #     check = data_json['check']
-            #     for _check in check:
-            #         rels_check.append([disease, _check])
-            #     checks += check
-            # if 'drug_detail' in data_json:
-            #     drug_detail = data_json['drug_detail']
-            #     producer = [i.split('(')[0] for i in drug_detail]
-            #     rels_drug_producer += [[i.split('(')[0], i.split('(')[-1].replace(')', '')] for i in drug_detail]
-            #     producers += producer
-            # disease_infos.append(disease_dict)
         return set(clinic_numbers), set(visit_numbers), set(department_names), set(patient_names), set(id_numbers), set(patient_genders), set(ages), set(doctor_ids), set(medical_payment_methods), set(main_diagnostic_codes), set(main_diagnosis_descriptions), set(main_diagnosis_names), \
                set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), set(other_diagnoses_3s), set(other_diagnosis_3_codes), set(epidemiological_history_of_convid_19s), set(physical_exam_descriptions), \
-               set(contents_of_doctors_orders), disease_infos, rels_clinic, rels_clinic_visit, \
+               set(contents_of_doctors_orders), set(describes), set(main_complaints), set(history_of_present_illnesses), set(past_historys), disease_infos, rels_clinic, rels_clinic_visit, \
                rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, \
-               rels_other_diagnoses_2, rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order
+               rels_other_diagnoses_2, rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, \
+               rels_past_history
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -389,9 +369,9 @@ class MedicalGraph:
     def create_graphnodes(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
-        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
-        rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
-        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order = self.read_nodes_1()
+        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
+        rels_department, rels_patient_names, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history = self.read_nodes_1()
         self.create_node("总项目", ['病历表'])
         self.create_node("细分项目", Medical_Records)
         self.create_node('门诊号', Clinic_numbers)
@@ -416,6 +396,10 @@ class MedicalGraph:
         self.create_node('是否有新冠肺炎流行病学史', Epidemiological_history_of_convid_19s)
         self.create_node('体格检查描述', Physical_exam_descriptions)
         self.create_node('医嘱项目内容', Contents_of_doctors_orders)
+        self.create_node('描述', Describes)
+        self.create_node('主诉', Main_complaints)
+        self.create_node('现病史', History_of_present_illnesses)
+        self.create_node('既往史', Past_historys)
         return
 
 
@@ -423,9 +407,9 @@ class MedicalGraph:
     def create_graphrels(self):
         Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
-        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, disease_infos, rels_clinic, rels_clinic_visit, rels_department, rels_patient_names, \
-        rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
-        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order = self.read_nodes_1()
+        Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
+        rels_department, rels_patient_names, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history = self.read_nodes_1()
         self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项', '细分项目')
         self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
         self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
@@ -449,6 +433,10 @@ class MedicalGraph:
         self.create_relationship('细分项目', '是否有新冠肺炎流行病学史', rels_epidemiological_history_of_convid_19, '是否有新冠肺炎流行病学史', '是否有新冠肺炎流行病学史')
         self.create_relationship('细分项目', '体格检查描述', rels_ephysical_exam_description, '体格检查描述', '体格检查描述')
         self.create_relationship('细分项目', '医嘱项目内容', rels_contents_of_doctors_order, '医嘱项目内容', '医嘱项目内容')
+        self.create_relationship('细分项目', '描述', rels_describe, '描述', '描述')
+        self.create_relationship('细分项目', '主诉', rels_main_complaint, '主诉', '主诉')
+        self.create_relationship('细分项目', '现病史', rels_history_of_present_illness, '现病史', '现病史')
+        self.create_relationship('细分项目', '既往史', rels_past_history, '既往史', '既往史')
 
     '''创建实体关联边'''
     def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
