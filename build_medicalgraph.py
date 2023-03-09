@@ -25,18 +25,14 @@ class MedicalGraph:
     '''读取文件data_path_1'''
     def read_nodes(self):
         medical_records = []       # 病历表
-        disease_infos_1 = []       # 大实体名称节点
         rels_detail_items = []     # 连接细部项目
         for data_1 in open(self.data_path_1, 'r', encoding='utf-8'):  # 加入 encoding='utf-8'才不会报错
-            disease_dict_1 = {}
             data_json = json.loads(data_1)
             medical_record = data_json['name']
             medical_records.append(medical_record)
-            disease_dict_1['name'] = medical_record                   # 添加病历表到 dict 保留尚未用到
-            for medical_record_ in medical_records:
-                rels_detail_items.append(['病历表', medical_record_])  # 节点上的名字与另一个节点上的名字连接
-            disease_infos_1.append(disease_dict_1)
-        return set(medical_records), disease_infos_1, rels_detail_items
+        for medical_record_ in medical_records:
+            rels_detail_items.append(['病历表', medical_record_])      # 节点上的名字与另一个节点上的名字连接
+        return set(medical_records), rels_detail_items
 
     '''读取文件data_path'''
     def read_nodes_1(self):
@@ -75,8 +71,8 @@ class MedicalGraph:
         # 构建节点实体关系
         rels_clinic = []                                            # 门诊号(大节点名称)-门诊号(数字) 关系
         rels_clinic_visit = []                                      # 就诊号(大节点名称)-就诊号(数字) 关系
-        rels_department = []                                        #　科室(大节点名称)－科室(细部科室名称) 关系
-        rels_patient_name = []                                      # 疾病(大节点名称)－疾病(细部疾病名称) 关系
+        rels_department = []                                        # 科室(大节点名称)－科室(细部科室名称) 关系
+        rels_patient_name = []                                      # 患者名称(大节点名称)－患者名称(患者名称名称) 关系
         rels_id_number = []                                         # 身份证号(大节点名称)－身份证号(个人身份证号码) 关系
         rels_patient_gender = []                                    # 患者性别(大节点名称)－患者性别(细分性别，可能男女中性?) 关系
         rels_age = []                                               # 年龄(大节点名称)－年龄(数字) 关系
@@ -100,8 +96,10 @@ class MedicalGraph:
         rels_history_of_present_illness = []                        #　现病史(大节点名称)－现病史(内容) 关系
         rels_past_history = []                                      #　既往史(大节点名称)－既往史(内容) 关系
 
-        # Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
+        # 细部节点关系
+        rels_patient_name_clinic = []                               # 患者名称(患者名称名称)－门诊号(大节点名称) 关系
 
+        Medical_Records, rels_detail_items = self.read_nodes()
         count = 0
         for data in open(self.data_path, 'r', encoding='utf-8'):    # 加入 encoding='utf-8'才不会报错
             disease_dict = {}
@@ -154,13 +152,15 @@ class MedicalGraph:
                 disease_dict['科室名称'] = department_name
                 for department_name_ in department_names:
                     rels_department.append(['科室名称', department_name_])
-
+            ##
             if '患者名称' in data_json:
                 patient_name = data_json['患者名称']
                 patient_names.append(patient_name)
                 disease_dict['患者名称'] = patient_name
                 for patient_name_ in patient_names:
-                    rels_patient_name.append(['患者名称', patient_name_])
+                    rels_patient_name.append(['患者名称', patient_name_])                  # 患者名称(大节点名称)－患者名称(患者名称名称) 关系
+                    for Medical_Record in Medical_Records:
+                        rels_patient_name_clinic.append([patient_name_, Medical_Record])             # 患者名称(患者名称名称)－门诊号(大节点名称) 关系
 
             if '身份证号' in data_json:
                 id_number = data_json['身份证号']
@@ -320,7 +320,7 @@ class MedicalGraph:
                 disease_dict['现病史'] = history_of_present_illness
                 for history_of_present_illness_ in history_of_present_illnesses:
                     rels_history_of_present_illness.append(['现病史', history_of_present_illness_])
-            ##
+
             if '既往史' in data_json:
                 past_history = data_json['既往史']
                 past_historys += past_history
@@ -331,22 +331,28 @@ class MedicalGraph:
 
 
             disease_infos.append(disease_dict)
-        print("1",disease_infos)
         return set(clinic_numbers), set(visit_numbers), set(department_names), set(patient_names), set(id_numbers), set(patient_genders), set(ages), set(doctor_ids), set(medical_payment_methods), set(main_diagnostic_codes), set(main_diagnosis_descriptions), set(main_diagnosis_names), \
                set(doctor_names), set(other_diagnoses_1s), set(other_diagnosis_1_codes), set(other_diagnoses_2s), set(other_diagnosis_2_codes), set(other_diagnoses_3s), set(other_diagnosis_3_codes), set(epidemiological_history_of_convid_19s), set(physical_exam_descriptions), \
                set(contents_of_doctors_orders), set(describes), set(main_complaints), set(history_of_present_illnesses), set(past_historys), disease_infos, rels_clinic, rels_clinic_visit, \
                rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, \
                rels_other_diagnoses_2, rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, \
-               rels_past_history
+               rels_past_history, rels_patient_name_clinic
 
     '''建立节点'''
-    def create_node(self, label, nodes):
+    def create_node(self, label, nodes, nums=None):
         count = 0
-        for node_name in nodes:
-            node = Node(label, name=node_name)
-            self.g.create(node)
-            count += 1
-            print(count, len(nodes))
+        if nums == 1:
+            for node_name in nodes:
+                node = Node(label, name=node_name)
+                self.g.create(node)
+                count += 1
+                print(count, len(nodes))
+        elif nums == 2:
+            for node_name in nodes:
+                node = Node(node_name, name=node_name)
+                self.g.create(node)
+                count += 1
+                print(count, len(nodes))
         return
 
     '''创建知识图谱中心疾病的节点'''
@@ -367,97 +373,122 @@ class MedicalGraph:
 
     '''创建知识图谱实体节点类型schema'''
     def create_graphnodes(self):
-        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
+        Medical_Records, rels_detail_items = self.read_nodes()
+        print(rels_detail_items)
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
         Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
         rels_department, rels_patient_names, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
-        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history = self.read_nodes_1()
-        self.create_node("总项目", ['病历表'])
-        self.create_node("细分项目", Medical_Records)
-        self.create_node('门诊号', Clinic_numbers)
-        self.create_node('就诊号', Visit_numbers)
-        self.create_node('科室名称', Department_names)
-        self.create_node('患者名称', Patient_names)
-        self.create_node('身份证号', Id_numbers)
-        self.create_node('患者性别', Patient_genders)
-        self.create_node('年龄', Ages)
-        self.create_node('医生工号', Doctor_ids)
-        self.create_node('医疗付款方式', Medical_payment_methods)
-        self.create_node('主要诊断编码', Main_diagnostic_codes)
-        self.create_node('主要诊断描述', Main_diagnosis_descriptions)
-        self.create_node('主要诊断名称', Main_diagnosis_names)
-        self.create_node('医生名称', Doctor_names)
-        self.create_node('其他诊断1', Other_diagnoses_1s)
-        self.create_node('其他诊断1编码', Other_diagnosis_1_codes)
-        self.create_node('其他诊断2', Other_diagnoses_2s)
-        self.create_node('其他诊断2编码', Other_diagnosis_2_codes)
-        self.create_node('其他诊断3', Other_diagnoses_3s)
-        self.create_node('其他诊断3编码', Other_diagnosis_3_codes)
-        self.create_node('是否有新冠肺炎流行病学史', Epidemiological_history_of_convid_19s)
-        self.create_node('体格检查描述', Physical_exam_descriptions)
-        self.create_node('医嘱项目内容', Contents_of_doctors_orders)
-        self.create_node('描述', Describes)
-        self.create_node('主诉', Main_complaints)
-        self.create_node('现病史', History_of_present_illnesses)
-        self.create_node('既往史', Past_historys)
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history, \
+        rels_patient_name_clinic= self.read_nodes_1()
+        self.create_node("病历表", ['病历表'], nums=1)
+        self.create_node("中心节点个名称", Medical_Records, nums=2)    # Node(node_name, name=node_name)
+        # self.create_node("细分项目", Medical_Records)
+        # self.create_node('门诊号', Clinic_numbers)
+        # self.create_node('就诊号', Visit_numbers)
+        # self.create_node('科室名称', Department_names)
+        # self.create_node('患者名称', Patient_names)
+        # self.create_node('身份证号', Id_numbers)
+        # self.create_node('患者性别', Patient_genders)
+        # self.create_node('年龄', Ages)
+        # self.create_node('医生工号', Doctor_ids)
+        # self.create_node('医疗付款方式', Medical_payment_methods)
+        # self.create_node('主要诊断编码', Main_diagnostic_codes)
+        # self.create_node('主要诊断描述', Main_diagnosis_descriptions)
+        # self.create_node('主要诊断名称', Main_diagnosis_names)
+        # self.create_node('医生名称', Doctor_names)
+        # self.create_node('其他诊断1', Other_diagnoses_1s)
+        # self.create_node('其他诊断1编码', Other_diagnosis_1_codes)
+        # self.create_node('其他诊断2', Other_diagnoses_2s)
+        # self.create_node('其他诊断2编码', Other_diagnosis_2_codes)
+        # self.create_node('其他诊断3', Other_diagnoses_3s)
+        # self.create_node('其他诊断3编码', Other_diagnosis_3_codes)
+        # self.create_node('是否有新冠肺炎流行病学史', Epidemiological_history_of_convid_19s)
+        # self.create_node('体格检查描述', Physical_exam_descriptions)
+        # self.create_node('医嘱项目内容', Contents_of_doctors_orders)
+        # self.create_node('描述', Describes)
+        # self.create_node('主诉', Main_complaints)
+        # self.create_node('现病史', History_of_present_illnesses)
+        # self.create_node('既往史', Past_historys)
         return
 
 
     '''创建实体关系边'''
     def create_graphrels(self):
-        Medical_Records, disease_infos_1, rels_detail_items = self.read_nodes()
+        Medical_Records, rels_detail_items = self.read_nodes()
         Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
         Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
         rels_department, rels_patient_names, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
-        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history = self.read_nodes_1()
-        self.create_relationship('总项目', '细分项目', rels_detail_items, '细分项', '细分项目')
-        self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
-        self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
-        self.create_relationship('细分项目', '科室名称', rels_department, '科室名称', '科室名称')
-        self.create_relationship('细分项目', '患者名称', rels_patient_names, '患者名称', '患者名称')
-        self.create_relationship('细分项目', '身份证号', rels_id_number, '身份证号', '身份证号')
-        self.create_relationship('细分项目', '患者性别', rels_patient_gender, '患者性别', '患者性别')
-        self.create_relationship('细分项目', '年龄', rels_age, '年龄', '年龄')
-        self.create_relationship('细分项目', '医生工号', rels_doctor_id, '医生工号', '医生工号')
-        self.create_relationship('细分项目', '医疗付款方式', rels_medical_payment_method, '医疗付款方式', '医疗付款方式')
-        self.create_relationship('细分项目', '主要诊断编码', rels_main_diagnostic_code, '主要诊断编码', '主要诊断编码')
-        self.create_relationship('细分项目', '主要诊断描述', rels_main_diagnosis_description, '主要诊断描述', '主要诊断描述')
-        self.create_relationship('细分项目', '主要诊断名称', rels_main_diagnosis_name, '主要诊断名称', '主要诊断名称')
-        self.create_relationship('细分项目', '医生名称', rels_doctor_name, '医生名', '医生名称')
-        self.create_relationship('细分项目', '其他诊断1', rels_other_diagnoses_1, '其他诊断1', '其他诊断1')
-        self.create_relationship('细分项目', '其他诊断1编码', rels_other_diagnosis_1_code, '其他诊断1编码', '其他诊断1编码')
-        self.create_relationship('细分项目', '其他诊断2', rels_other_diagnoses_2, '其他诊断2', '其他诊断2')
-        self.create_relationship('细分项目', '其他诊断2编码', rels_other_diagnosis_2_code, '其他诊断2编码', '其他诊断2编码')
-        self.create_relationship('细分项目', '其他诊断3', rels_other_diagnoses_3, '其他诊断3', '其他诊断3')
-        self.create_relationship('细分项目', '其他诊断3编码', rels_other_diagnosis_3_code, '其他诊断3编码', '其他诊断3编码')
-        self.create_relationship('细分项目', '是否有新冠肺炎流行病学史', rels_epidemiological_history_of_convid_19, '是否有新冠肺炎流行病学史', '是否有新冠肺炎流行病学史')
-        self.create_relationship('细分项目', '体格检查描述', rels_ephysical_exam_description, '体格检查描述', '体格检查描述')
-        self.create_relationship('细分项目', '医嘱项目内容', rels_contents_of_doctors_order, '医嘱项目内容', '医嘱项目内容')
-        self.create_relationship('细分项目', '描述', rels_describe, '描述', '描述')
-        self.create_relationship('细分项目', '主诉', rels_main_complaint, '主诉', '主诉')
-        self.create_relationship('细分项目', '现病史', rels_history_of_present_illness, '现病史', '现病史')
-        self.create_relationship('细分项目', '既往史', rels_past_history, '既往史', '既往史')
+        rels_other_diagnosis_2_code, rels_other_diagnoses_3, rels_other_diagnosis_3_code, rels_epidemiological_history_of_convid_19, rels_ephysical_exam_description, rels_contents_of_doctors_order, rels_describe, rels_main_complaint, rels_history_of_present_illness, rels_past_history, \
+        rels_patient_name_clinic= self.read_nodes_1()
+        self.create_relationship('病历表', '中心节点个名称', rels_detail_items, '细分项', '细分项目', nums=2) # p = rels_detail_items[0][0],q = rels_detail_items[0][1]
+        # self.create_relationship('细分项目', '门诊号', rels_clinic, '门诊号码唯一ID', '门诊号码')
+        # self.create_relationship('细分项目', '就诊号', rels_clinic_visit, '每次看病的就诊号', '就诊记录')
+        # self.create_relationship('细分项目', '科室名称', rels_department, '科室名称', '科室名称')
+        # self.create_relationship('细分项目', '患者名称', rels_patient_names, '患者名称', '患者名称')
+        # self.create_relationship('细分项目', '身份证号', rels_id_number, '身份证号', '身份证号')
+        # self.create_relationship('细分项目', '患者性别', rels_patient_gender, '患者性别', '患者性别')
+        # self.create_relationship('细分项目', '年龄', rels_age, '年龄', '年龄')
+        # self.create_relationship('细分项目', '医生工号', rels_doctor_id, '医生工号', '医生工号')
+        # self.create_relationship('细分项目', '医疗付款方式', rels_medical_payment_method, '医疗付款方式', '医疗付款方式')
+        # self.create_relationship('细分项目', '主要诊断编码', rels_main_diagnostic_code, '主要诊断编码', '主要诊断编码')
+        # self.create_relationship('细分项目', '主要诊断描述', rels_main_diagnosis_description, '主要诊断描述', '主要诊断描述')
+        # self.create_relationship('细分项目', '主要诊断名称', rels_main_diagnosis_name, '主要诊断名称', '主要诊断名称')
+        # self.create_relationship('细分项目', '医生名称', rels_doctor_name, '医生名', '医生名称')
+        # self.create_relationship('细分项目', '其他诊断1', rels_other_diagnoses_1, '其他诊断1', '其他诊断1')
+        # self.create_relationship('细分项目', '其他诊断1编码', rels_other_diagnosis_1_code, '其他诊断1编码', '其他诊断1编码')
+        # self.create_relationship('细分项目', '其他诊断2', rels_other_diagnoses_2, '其他诊断2', '其他诊断2')
+        # self.create_relationship('细分项目', '其他诊断2编码', rels_other_diagnosis_2_code, '其他诊断2编码', '其他诊断2编码')
+        # self.create_relationship('细分项目', '其他诊断3', rels_other_diagnoses_3, '其他诊断3', '其他诊断3')
+        # self.create_relationship('细分项目', '其他诊断3编码', rels_other_diagnosis_3_code, '其他诊断3编码', '其他诊断3编码')
+        # self.create_relationship('细分项目', '是否有新冠肺炎流行病学史', rels_epidemiological_history_of_convid_19, '是否有新冠肺炎流行病学史', '是否有新冠肺炎流行病学史')
+        # self.create_relationship('细分项目', '体格检查描述', rels_ephysical_exam_description, '体格检查描述', '体格检查描述')
+        # self.create_relationship('细分项目', '医嘱项目内容', rels_contents_of_doctors_order, '医嘱项目内容', '医嘱项目内容')
+        # self.create_relationship('细分项目', '描述', rels_describe, '描述', '描述')
+        # self.create_relationship('细分项目', '主诉', rels_main_complaint, '主诉', '主诉')
+        # self.create_relationship('细分项目', '现病史', rels_history_of_present_illness, '现病史', '现病史')
+        # self.create_relationship('细分项目', '既往史', rels_past_history, '既往史', '既往史')
+        # self.create_relationship('患者名称', '门诊号', rels_patient_name_clinic, '门诊号', '门诊号')
 
     '''创建实体关联边'''
-    def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
-        count = 0
-        # 去重处理
-        set_edges = []
-        for edge in edges:
-            set_edges.append('###'.join(edge))
-        all = len(set(set_edges))
-        for edge in set(set_edges):
-            edge = edge.split('###')
-            p = edge[0]
-            q = edge[1]
-            query = "match(p:%s),(q:%s) where p.name='%s'and q.name='%s' create (p)-[rel:%s{name:'%s'}]->(q)" % (
-                start_node, end_node, p, q, rel_type, rel_name)
-            try:
-                self.g.run(query)
-                count += 1
-                print(rel_type, count, all)
-            except Exception as e:
-                print(e)
+    def create_relationship(self, start_node, end_node, edges, rel_type, rel_name, nums=None):
+        if nums == 1:
+            count = 0
+            # 去重处理
+            set_edges = []
+            for edge in edges:
+                set_edges.append('###'.join(edge))
+            all = len(set(set_edges))
+            for edge in set(set_edges):
+                edge = edge.split('###')
+                p = edge[0]
+                q = edge[1]
+                query = "match(p:%s),(q:%s) where p.name='%s'and q.name='%s' create (p)-[rel:%s{name:'%s'}]->(q)" % (
+                    start_node, end_node, p, q, rel_type, rel_name)
+                try:
+                    self.g.run(query)
+                    count += 1
+                    print(rel_type, count, all)
+                except Exception as e:
+                    print(e)
+        elif nums == 2:
+            count = 0
+            # 去重处理
+            set_edges = []
+            for edge in edges:
+                set_edges.append('###'.join(edge))
+            all = len(set_edges)
+            for edge in set_edges:
+                edge = edge.split('###')
+                p = edge[0]
+                q = edge[1]
+                query = "match(p:%s),(q:%s) where p.name='%s'and q.name='%s' create (p)-[rel:%s{name:'%s'}]->(q)" % (
+                    p, q, p, q, rel_type, rel_name)
+                try:
+                    self.g.run(query)
+                    count += 1
+                    print(rel_type, count, all)
+                except Exception as e:
+                    print(e)
         return
 
     '''导出数据'''
