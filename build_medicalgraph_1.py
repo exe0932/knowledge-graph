@@ -16,10 +16,10 @@ class MedicalGraph:
 
     '''读取文件data_path'''
     def read_nodes(self):
-        # 共７类节点
-        visit_numbers = []  # 就诊号
-        department_names = []  # 科室名称
-        patient_names = []  # 患者名称
+        # 共9类节点
+        visit_numbers = []                                          # 就诊号
+        department_names = []                                       # 科室名称
+        patient_names = []                                          # 患者名称
 
         '''
         clinic_numbers = []  # 门诊号
@@ -28,13 +28,13 @@ class MedicalGraph:
         ages = []  # 年龄
         '''
 
-        visit_numbers_infos = []  # 就诊号码为中心节点
+        visit_numbers_infos = []                                    # 就诊号码为中心节点
 
-        doctor_ids = []  # 医生工号
-        medical_payment_methods = []  # 医疗付款方式
-        main_diagnostic_codes = []  # 主要诊断编码
-        main_diagnosis_names = []  # 主要诊断名称
-        doctor_names = []  # 医生名称
+        doctor_ids = []                                             # 医生工号
+        medical_payment_methods = []                                # 医疗付款方式
+        main_diagnostic_codes = []                                  # 主要诊断编码
+        main_diagnosis_names = []                                   # 主要诊断名称
+        doctor_names = []                                           # 医生名称
 
         '''
         main_diagnosis_descriptions = []  # 主要诊断描述
