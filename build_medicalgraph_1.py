@@ -113,7 +113,7 @@ class MedicalGraph:
             visit_numbers_dict['主要诊断名称'] = ''
             visit_numbers_dict['主要诊断编码'] = ''
 
-            '''
+            # 尚未使用
             visit_numbers_dict['门诊号'] = ''
             visit_numbers_dict['身份证号'] = ''
             visit_numbers_dict['患者性别'] = ''
@@ -132,7 +132,6 @@ class MedicalGraph:
             visit_numbers_dict['主诉'] = ''
             visit_numbers_dict['现病史'] = ''
             visit_numbers_dict['既往史'] = ''
-            '''
 
             if '患者名称' in data_json:
                 patient_name = data_json['患者名称']
