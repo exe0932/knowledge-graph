@@ -14,26 +14,30 @@ class MedicalGraph:
         self.g = Graph("http://localhost:7474", auth=("neo4j", "ji32k7au4a83"))
         self.g.delete_all()  # 先清空数据库，按需执行
 
-        '''读取文件data_path'''
-
+    '''读取文件data_path'''
     def read_nodes(self):
         # 共７类节点
-        clinic_numbers = []  # 门诊号
         visit_numbers = []  # 就诊号
         department_names = []  # 科室名称
         patient_names = []  # 患者名称
+
+        '''
+        clinic_numbers = []  # 门诊号
         id_numbers = []  # 身份证号
         patient_genders = []  # 患者性别
         ages = []  # 年龄
+        '''
 
         visit_numbers_infos = []  # 就诊号码为中心节点
 
         doctor_ids = []  # 医生工号
         medical_payment_methods = []  # 医疗付款方式
         main_diagnostic_codes = []  # 主要诊断编码
-        main_diagnosis_descriptions = []  # 主要诊断描述
         main_diagnosis_names = []  # 主要诊断名称
         doctor_names = []  # 医生名称
+
+        '''
+        main_diagnosis_descriptions = []  # 主要诊断描述
         other_diagnoses_1s = []  # 其他诊断1
         other_diagnosis_1_codes = []  # 其他诊断1编码
         other_diagnoses_2s = []  # 其他诊断2
@@ -47,8 +51,18 @@ class MedicalGraph:
         main_complaints = []  # 主诉
         history_of_present_illnesses = []  # 现病史
         past_historys = []  # 既往史
+        '''
 
+        # 细部节点关系
+        rels_patient_name_visit_number = []                         # 患者名称(内容)-就诊号(数字) 关系；病人的就诊号
+        rels_visit_number_department_name = []                      # 就诊号(数字)-科室名称(内容) 关系；就诊号对应看病的科室
+        rels_department_name_main_diagnosis_name = []               # 科室名称(内容)-主要诊断名称(内容) 关系；疾病属于什么科室
+        rels_main_diagnosis_name_diagnostic_codes = []              # 主要诊断名称(内容)-主要诊断编码(数字) 关系；该疾病的诊断编码
+        rels_visit_department_doctor_name = []                      # 就诊号(数字)-医生名称(名字) 关系；当次就诊医生名
+        rels_doctor_name_doctor_id = []                             # 医生名称(名字)-医生功号(数字)关系；当次就诊医生工号
+        rels_visit_medical_payment_method = []                      # 就诊号(数字)-医疗付款方式(自费或社保)检查关系；当次就诊付款方式
 
+        '''
         # 构建节点实体关系
         rels_clinic = []                                            # 门诊号(大节点名称)-门诊号(数字) 关系
         rels_clinic_visit = []                                      # 就诊号(大节点名称)-就诊号(数字) 关系
@@ -80,14 +94,7 @@ class MedicalGraph:
         # 细部节点关系
         rels_patient_name_clinic = []                               # 患者名称(患者名称名称)－门诊号(大节点名称) 关系
         rels_clinic_visit_number = []                               # 门诊号(数字)－就诊号(大节点名称) 关系
-
-        rels_patient_name_visit_number = []                         # 患者名称(内容)-就诊号(数字) 关系；病人的就诊号
-        rels_visit_number_department_name = []                      # 就诊号(数字)-科室名称(内容) 关系；就诊号对应看病的科室
-        rels_department_name_main_diagnosis_name = []               # 科室名称(内容)-主要诊断名称(内容) 关系；疾病属于什么科室
-        rels_main_diagnosis_name_diagnostic_codes = []              # 主要诊断名称(内容)-主要诊断编码(数字) 关系；该疾病的诊断编码
-        rels_visit_department_doctor_name = []                      # 就诊号(数字)-医生名称(名字) 关系；当次就诊医生名
-        rels_doctor_name_doctor_id = []                             # 医生名称(名字)-医生功号(数字)关系；当次就诊医生工号
-        rels_visit_medical_payment_method = []                      # 就诊号(数字)-医疗付款方式(自费或社保)检查关系；当次就诊付款方式
+        '''
 
         count = 0
         for data in open(self.data_path, 'r', encoding='utf-8'):  # 加入 encoding='utf-8'才不会报错
@@ -98,18 +105,20 @@ class MedicalGraph:
             visit_number = data_json['就诊号']
             visit_numbers_dict['就诊号'] = visit_number
             visit_numbers.append(visit_number)
-            visit_numbers_dict['门诊号'] = ''
             visit_numbers_dict['科室名称'] = ''
             visit_numbers_dict['患者名称'] = ''
+            visit_numbers_dict['医生工号'] = ''
+            visit_numbers_dict['医疗付款方式'] = ''
+            visit_numbers_dict['医生名称'] = ''
+            visit_numbers_dict['主要诊断名称'] = ''
+            visit_numbers_dict['主要诊断编码'] = ''
+
+            '''
+            visit_numbers_dict['门诊号'] = ''
             visit_numbers_dict['身份证号'] = ''
             visit_numbers_dict['患者性别'] = ''
             visit_numbers_dict['年龄'] = ''
-            visit_numbers_dict['医生工号'] = ''
-            visit_numbers_dict['医疗付款方式'] = ''
-            visit_numbers_dict['主要诊断编码'] = ''
             visit_numbers_dict['主要诊断描述'] = ''
-            visit_numbers_dict['主要诊断名称'] = ''
-            visit_numbers_dict['医生名称'] = ''
             visit_numbers_dict['其他诊断1'] = ''
             visit_numbers_dict['其他诊断1编码'] = ''
             visit_numbers_dict['其他诊断2'] = ''
@@ -123,6 +132,7 @@ class MedicalGraph:
             visit_numbers_dict['主诉'] = ''
             visit_numbers_dict['现病史'] = ''
             visit_numbers_dict['既往史'] = ''
+            '''
 
             if '患者名称' in data_json:
                 patient_name = data_json['患者名称']
@@ -225,6 +235,8 @@ class MedicalGraph:
         self.create_node('医生名称', doctor_names)
         self.create_node('医生工号', doctor_ids)
         self.create_node('医疗付款方式', medical_payment_methods)
+
+        '''
         # Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
         # Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
         # rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
@@ -251,6 +263,7 @@ class MedicalGraph:
         # self.create_node('主诉_', Main_complaints, nums=1)
         # self.create_node('现病史_', History_of_present_illnesses, nums=1)
         # self.create_node('既往史_', Past_historys, nums=1)
+        '''
         return
 
     '''创建实体关系边'''
@@ -265,6 +278,8 @@ class MedicalGraph:
         self.create_relationship('就诊号', '医生名称', rels_visit_department_doctor_name, '医生名', '医生名')
         self.create_relationship('医生名称', '医生工号', rels_doctor_name_doctor_id, '工号', '医生工号')
         self.create_relationship('就诊号', '医疗付款方式', rels_visit_medical_payment_method, '付款方式', '付款方式')
+
+        '''
         # Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
         # Other_diagnosis_2_codes, Other_diagnoses_3s, Other_diagnosis_3_codes, Epidemiological_history_of_convid_19s, Physical_exam_descriptions, Contents_of_doctors_orders, Describes, Main_complaints, History_of_present_illnesses, Past_historys, disease_infos, rels_clinic, rels_clinic_visit, \
         # rels_department, rels_patient_name, rels_id_number, rels_patient_gender, rels_age, rels_doctor_id, rels_medical_payment_method, rels_main_diagnostic_code, rels_main_diagnosis_description, rels_main_diagnosis_name, rels_doctor_name, rels_other_diagnoses_1, rels_other_diagnosis_1_code, rels_other_diagnoses_2, \
@@ -293,9 +308,9 @@ class MedicalGraph:
         # self.create_relationship('主诉', '主诉_', rels_main_complaint, '主诉', '主诉', nums=1)
         # self.create_relationship('现病史', '现病史_', rels_history_of_present_illness, '现病史', '现病史', nums=1)
         # self.create_relationship('既往史', '既往史_', rels_past_history, '既往史', '既往史', nums=1)
+        '''
 
     '''创建实体关联边'''
-
     def create_relationship(self, start_node, end_node, edges, rel_type, rel_name):
         count = 0
         # 去重处理
