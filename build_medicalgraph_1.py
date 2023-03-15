@@ -14,6 +14,9 @@ class MedicalGraph:
         self.g = Graph("http://localhost:7474", auth=("neo4j", "ji32k7au4a83"))
         self.g.delete_all()  # 先清空数据库，按需执行
 
+        self.project_dir = os.path.dirname(os.path.abspath(__file__))
+        self.dict_save_dir = os.path.join(self.project_dir, 'dict')
+
     '''读取文件data_path'''
     def read_nodes(self):
         # 共9类节点
@@ -333,34 +336,39 @@ class MedicalGraph:
 
     '''导出数据'''
     def export_data(self):
-        Drugs, Foods, Checks, Departments, Producers, Symptoms, Diseases, disease_infos, rels_check, rels_recommandeat, rels_noteat, rels_doeat, rels_department, rels_commonddrug, rels_drug_producer, rels_recommanddrug, rels_symptom, rels_acompany, rels_category = self.read_nodes()
-        f_drug = open('drug.txt', 'w+')
-        f_food = open('food.txt', 'w+')
-        f_check = open('check.txt', 'w+')
-        f_department = open('department.txt', 'w+')
-        f_producer = open('producer.txt', 'w+')
-        f_symptom = open('symptoms.txt', 'w+')
-        f_disease = open('disease.txt', 'w+')
-
-        f_drug.write('\n'.join(list(Drugs)))
-        f_food.write('\n'.join(list(Foods)))
-        f_check.write('\n'.join(list(Checks)))
-        f_department.write('\n'.join(list(Departments)))
-        f_producer.write('\n'.join(list(Producers)))
-        f_symptom.write('\n'.join(list(Symptoms)))
-        f_disease.write('\n'.join(list(Diseases)))
-
-        f_drug.close()
-        f_food.close()
-        f_check.close()
-        f_department.close()
-        f_producer.close()
-        f_symptom.close()
-        f_disease.close()
+        if not os.path.exists(self.dict_save_dir):
+            os.makedirs(self.dict_save_dir)
+        # patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, \
+        # visit_numbers_infos, rels_patient_name_visit_number, rels_visit_number_department_name, rels_department_name_main_diagnosis_name, \
+        # rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method = self.read_nodes()
+        # f_drug = open('drug.txt', 'w+')
+        # f_food = open('food.txt', 'w+')
+        # f_check = open('check.txt', 'w+')
+        # f_department = open('department.txt', 'w+')
+        # f_producer = open('producer.txt', 'w+')
+        # f_symptom = open('symptoms.txt', 'w+')
+        # f_disease = open('disease.txt', 'w+')
+        #
+        # f_drug.write('\n'.join(list(Drugs)))
+        # f_food.write('\n'.join(list(Foods)))
+        # f_check.write('\n'.join(list(Checks)))
+        # f_department.write('\n'.join(list(Departments)))
+        # f_producer.write('\n'.join(list(Producers)))
+        # f_symptom.write('\n'.join(list(Symptoms)))
+        # f_disease.write('\n'.join(list(Diseases)))
+        #
+        # f_drug.close()
+        # f_food.close()
+        # f_check.close()
+        # f_department.close()
+        # f_producer.close()
+        # f_symptom.close()
+        # f_disease.close()
 
         return
+
 if __name__ == '__main__':
     handler = MedicalGraph()
-    #handler.export_data()
+    handler.export_data()
     handler.create_graphnodes()
     handler.create_graphrels()
