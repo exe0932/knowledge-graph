@@ -9,5 +9,5 @@ database
 ## Build Graph 
 Import data, create nodes, and input to the knowledge graph
 ```
-build_medicalgraph.py
+build_medicalgraph_1.py
 ```
