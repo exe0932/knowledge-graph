@@ -34,7 +34,7 @@ class QuestionClassifier:
         # 构造领域actree
         self.region_tree = self.build_actree(list(self.region_words))
 
-        # # 构建词典
+        # 构建词典
         # self.wdtype_tree = self.build_wdtype_dict()
         print('model init finished ......')
 
@@ -47,18 +47,40 @@ class QuestionClassifier:
 
         return
 
+    '''构造词对应的类型'''
+    def build_wdtype_dict(self):
+        wd_dict = dict()
+        for wd in self.region_words:
+            wd_dict[wd] = []
+            if wd in self.department_names_wds:
+                wd_dict[wd].append('department_names')
+            if wd in self.doctor_ids_wds:
+                wd_dict[wd].append('doctor_ids')
+            if wd in self.doctor_names_wds:
+                wd_dict[wd].append('doctor_names')
+            if wd in self.main_diagnosis_names_wds:
+                wd_dict[wd].append('main_diagnosis_names')
+            if wd in self.main_diagnostic_codes_wds:
+                wd_dict[wd].append('main_diagnostic_codes')
+            if wd in self.medical_payment_methods_wds:
+                wd_dict[wd].append('medical_payment_methods')
+            if wd in self.patient_names_wds:
+                wd_dict[wd].append('patient_names')
+        return wd_dict
+    
     '''构造actree，加速过滤'''
     def build_actree(self, wordlist):
         actree = ahocorasick.Automaton()
         for index, word in enumerate(wordlist):
             actree.add_word(word, (index, word))
         actree.make_automaton()
-        return
+        return actree
 
     '''问句过滤'''
     def check_medical(self, question):
         region_wds = list()
         for i in self.region_tree.iter(question):
+            print(i)
             wd = i[1][1]
             region_wds.append(wd)
         stop_wds = []
@@ -72,6 +94,7 @@ class QuestionClassifier:
         return final_dict
 if __name__ == '__main__':
     handler = QuestionClassifier()
+    handler.check_medical('急性鼻炎')
     # while 1:
     #     question = input('input an question:')
     #     data = handler.classify(question)
