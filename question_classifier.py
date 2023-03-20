@@ -35,7 +35,7 @@ class QuestionClassifier:
         self.region_tree = self.build_actree(list(self.region_words))
 
         # 构建词典
-        # self.wdtype_tree = self.build_wdtype_dict()
+        self.wdtype_dict = self.build_wdtype_dict()
         print('model init finished ......')
 
         return
@@ -67,7 +67,7 @@ class QuestionClassifier:
             if wd in self.patient_names_wds:
                 wd_dict[wd].append('patient_names')
         return wd_dict
-    
+
     '''构造actree，加速过滤'''
     def build_actree(self, wordlist):
         actree = ahocorasick.Automaton()
