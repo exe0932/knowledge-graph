@@ -30,12 +30,15 @@ class QuestionClassifier:
         self.patient_names_wds = [i.strip() for i in open(self.patient_names_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
 
         self.region_words = set(self.department_names_wds + self.doctor_ids_wds + self.doctor_names_wds + self.main_diagnosis_names_wds + self.main_diagnostic_codes_wds + self.medical_payment_methods_wds + self.patient_names_wds)
-        print(self.region_words)
         # 构造领域actree
         self.region_tree = self.build_actree(list(self.region_words))
 
         # 构建词典
         self.wdtype_dict = self.build_wdtype_dict()
+
+        # 问句疑问词
+        self.belong_qwds = ['要看什么科', '属于', '什么科', '科室', '属于什么科室', '属于什么科']
+
         print('model init finished ......')
 
         return
@@ -55,8 +58,15 @@ class QuestionClassifier:
 
         question_types = []
 
+        # 已知疾病，推荐科室
+        if self.check_words(self.belong_qwds, question) and ('department_names' in types):
+            question_type = 'main_diagnosis_names_department_names'
+            question_types.append(question_type)
 
-        return
+        # 将多疙分类结果进行合并处理，组装成一个字典
+        data['question_types'] = question_types
+
+        return  data
 
     '''构造词对应的类型'''
     def build_wdtype_dict(self):
@@ -113,9 +123,9 @@ class QuestionClassifier:
 
 if __name__ == '__main__':
     handler = QuestionClassifier()
-    handler.check_medical('急性鼻炎')
-    handler.classify('急性鼻炎')
-    # while 1:
-    #     question = input('input an question:')
-    #     data = handler.classify(question)
-    #     print(data)
+    # handler.check_medical('急性鼻炎')
+    # handler.classify('急性鼻炎')
+    while 1:
+        question = input('input an question:')
+        data = handler.classify(question)
+        # print(data)
