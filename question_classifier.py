@@ -47,7 +47,15 @@ class QuestionClassifier:
         if not medical_dict:
             return {}
         data['args'] = medical_dict
-        print(medical_dict)
+        # 收集问句当中所涉及到的实体类型
+        types = []
+        for type_ in medical_dict.values():
+            types += type_
+        question_type = 'others'
+
+        question_types = []
+
+
         return
 
     '''构造词对应的类型'''
@@ -94,6 +102,15 @@ class QuestionClassifier:
         final_dict = {i: self.wdtype_dict.get(i) for i in final_wds}
 
         return final_dict
+
+    '''基于特征词进行分类'''
+    def check_words(self, wds, sent):
+        for wd in wds:
+            if wd in sent:
+                return True
+        return False
+
+
 if __name__ == '__main__':
     handler = QuestionClassifier()
     handler.check_medical('急性鼻炎')
