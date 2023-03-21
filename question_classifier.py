@@ -53,20 +53,21 @@ class QuestionClassifier:
         # 收集问句当中所涉及到的实体类型
         types = []
         for type_ in medical_dict.values():
+            print(type_)
             types += type_
         question_type = 'others'
 
         question_types = []
 
-        # 已知疾病，推荐科室
-        if self.check_words(self.belong_qwds, question) and ('department_names' in types):
+        # 已知主要诊断名称，推荐科室
+        if self.check_words(self.belong_qwds, question) and ('main_diagnosis_names' in types):
             question_type = 'main_diagnosis_names_department_names'
             question_types.append(question_type)
 
         # 将多疙分类结果进行合并处理，组装成一个字典
         data['question_types'] = question_types
 
-        return  data
+        return data
 
     '''构造词对应的类型'''
     def build_wdtype_dict(self):
@@ -116,6 +117,7 @@ class QuestionClassifier:
     '''基于特征词进行分类'''
     def check_words(self, wds, sent):
         for wd in wds:
+            print(wd)
             if wd in sent:
                 return True
         return False
@@ -124,8 +126,8 @@ class QuestionClassifier:
 if __name__ == '__main__':
     handler = QuestionClassifier()
     # handler.check_medical('急性鼻炎')
-    # handler.classify('急性鼻炎')
+    # handler.classify('急性鼻炎') #急性鼻炎要看什么科
     while 1:
         question = input('input an question:')
         data = handler.classify(question)
-        # print(data)
+        print(data)
