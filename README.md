@@ -21,6 +21,7 @@ dict
 ```
 
 ## Build Question classification
+Construct feature words, question words, word filtering, and construct word classification
 ```
 question_classifier.py
 ```
