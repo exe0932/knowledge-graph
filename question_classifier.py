@@ -44,7 +44,10 @@ class QuestionClassifier:
     def classify(self, question):
         data = dict()
         medical_dict = self.check_medical(question)
-
+        if not medical_dict:
+            return {}
+        data['args'] = medical_dict
+        print(medical_dict)
         return
 
     '''构造词对应的类型'''
@@ -80,7 +83,6 @@ class QuestionClassifier:
     def check_medical(self, question):
         region_wds = list()
         for i in self.region_tree.iter(question):
-            print(i)
             wd = i[1][1]
             region_wds.append(wd)
         stop_wds = []
@@ -95,6 +97,7 @@ class QuestionClassifier:
 if __name__ == '__main__':
     handler = QuestionClassifier()
     handler.check_medical('急性鼻炎')
+    handler.classify('急性鼻炎')
     # while 1:
     #     question = input('input an question:')
     #     data = handler.classify(question)
