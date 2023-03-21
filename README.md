@@ -25,3 +25,9 @@ Construct feature words, question words, word filtering, and construct word clas
 ```
 question_classifier.py
 ```
+
+## Build Question parser
+For different problems, search and process separately
+```
+question_parser.py
+```
