@@ -35,7 +35,7 @@ class QuestionPaser:
             if sql:
                 sql_['sql'] = sql
 
-                sql.append(sql_)
+                sqls.append(sql_)
 
         return sqls
 
@@ -60,4 +60,5 @@ class QuestionPaser:
 
 if __name__ == '__main__':
     handler = QuestionPaser()
-    handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
+    a = handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
+    print(a)
