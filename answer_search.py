@@ -26,15 +26,23 @@ class AnswerSearcher:
                 ress = self.g.run(query).data()
                 print(ress)
                 answers += ress
-            final_answers = self.answer_prettify(question_type, answers)
-
-        return
+            final_answer = self.answer_prettify(question_type, answers)
+            print(final_answer)
+            if final_answers:
+                final_answers.append(final_answer)
+        return final_answers
 
     '''根据对应的qustion_type，调用相应的回复模板'''
     def answer_prettify(self, question_type, answers):
-        final_answer = []
+        final_answer = list()
         if not answers:
             return ''
+        if question_type == 'main_diagnosis_names_department_names':
+            desc = [i['m.name'] for i in answers]
+            print(desc)
+            subject = answers[0]['n.name']
+            final_answer = '{0}的症状建议挂的科室有:{1}'.format(subject, ';'.join(list(set(desc))[:self.num_limit]))
+        return final_answer
 
 
 if __name__ == '__main__':
