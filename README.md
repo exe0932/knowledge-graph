@@ -31,3 +31,9 @@ For different problems, search and process separately
 ```
 question_parser.py
 ```
+
+## Build Answer search
+Connect the knowledge graph database and find answers for the specified nodes
+```
+answer_search
+```
