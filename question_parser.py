@@ -22,7 +22,7 @@ class QuestionPaser:
     def parser_main(self, res_classify):
         args = res_classify['args']
         entity_dict = self.build_entitydict(args)
-        print(entity_dict)
+        # print("entity_dict", entity_dict)
         question_types = res_classify['question_types']
         sqls = []
         for question_type in question_types:
@@ -31,7 +31,7 @@ class QuestionPaser:
             sql = []
             if question_type == 'main_diagnosis_names_department_names':
                 sql = self.sql_transfer(question_type, entity_dict.get('main_diagnosis_names'))
-                print(sql)
+                # print("sql", sql)
             if sql:
                 sql_['sql'] = sql
 
@@ -48,7 +48,7 @@ class QuestionPaser:
         sql = []
         # 已知主要诊断名称，查询推荐科室
         if question_type == 'main_diagnosis_names_department_names':
-            sql = ["MATCH (m:主要诊断名称)-[r:疾病名称]->(n:科室名称) where m.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
+            sql = ["MATCH (m:科室名称)-[r:疾病名称]->(n:主要诊断名称) where n.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
 
         return sql
 
@@ -60,5 +60,5 @@ class QuestionPaser:
 
 if __name__ == '__main__':
     handler = QuestionPaser()
-    a = handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
-    print(a)
+    # a = handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
+    # print(a)

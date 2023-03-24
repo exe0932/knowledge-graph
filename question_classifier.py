@@ -53,7 +53,7 @@ class QuestionClassifier:
         # 收集问句当中所涉及到的实体类型
         types = []
         for type_ in medical_dict.values():
-            print(type_)
+            # print("type_", type_)
             types += type_
         question_type = 'others'
 
@@ -117,7 +117,7 @@ class QuestionClassifier:
     '''基于特征词进行分类'''
     def check_words(self, wds, sent):
         for wd in wds:
-            print(wd)
+            # print("wd", wd)
             if wd in sent:
                 return True
         return False
