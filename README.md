@@ -35,5 +35,11 @@ question_parser.py
 ## Build Answer search
 Connect the knowledge graph database and find answers for the specified nodes
 ```
-answer_search
+answer_search.py
+```
+
+## Run the dialog system
+This function is to run the retrieval dialog system, it can be used after running
+```
+chatbot_graph.py
 ```
