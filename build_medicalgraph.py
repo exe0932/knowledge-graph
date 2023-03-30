@@ -38,6 +38,7 @@ class MedicalGraph:
         main_diagnostic_codes = []                                  # 主要诊断编码
         main_diagnosis_names = []                                   # 主要诊断名称
         doctor_names = []                                           # 医生名称
+        main_complaints = []                                        # 主诉
 
         '''
         main_diagnosis_descriptions = []  # 主要诊断描述
@@ -51,7 +52,6 @@ class MedicalGraph:
         physical_exam_descriptions = []  # 体格检查描述
         contents_of_doctors_orders = []  # 医嘱项目内容
         describes = []  # 描述
-        main_complaints = []  # 主诉
         history_of_present_illnesses = []  # 现病史
         past_historys = []  # 既往史
         '''
@@ -62,8 +62,9 @@ class MedicalGraph:
         rels_department_name_main_diagnosis_name = []               # 科室名称(内容)-主要诊断名称(内容) 关系；疾病属于什么科室
         rels_main_diagnosis_name_diagnostic_codes = []              # 主要诊断名称(内容)-主要诊断编码(数字) 关系；该疾病的诊断编码
         rels_visit_department_doctor_name = []                      # 就诊号(数字)-医生名称(名字) 关系；当次就诊医生名
-        rels_doctor_name_doctor_id = []                             # 医生名称(名字)-医生功号(数字)关系；当次就诊医生工号
-        rels_visit_medical_payment_method = []                      # 就诊号(数字)-医疗付款方式(自费或社保)检查关系；当次就诊付款方式
+        rels_doctor_name_doctor_id = []                             # 医生名称(名字)-医生功号(数字) 关系；当次就诊医生工号
+        rels_visit_medical_payment_method = []                      # 就诊号(数字)-医疗付款方式(自费或社保)检查 关系；当次就诊付款方式
+        rels_main_complaint_diagnosis_name = []                     # 主诉(内容)-主要诊断名称(内容) 关系；病人描述的主诉推断疾病名称(主要诊断名称)
 
         '''
         # 构建节点实体关系
@@ -115,6 +116,7 @@ class MedicalGraph:
             visit_numbers_dict['医生名称'] = ''
             visit_numbers_dict['主要诊断名称'] = ''
             visit_numbers_dict['主要诊断编码'] = ''
+            visit_numbers_dict['主诉'] = ''
 
             # 尚未使用
             visit_numbers_dict['门诊号'] = ''
@@ -132,7 +134,6 @@ class MedicalGraph:
             visit_numbers_dict['体格检查描述'] = ''
             visit_numbers_dict['医嘱项目内容'] = ''
             visit_numbers_dict['描述'] = ''
-            visit_numbers_dict['主诉'] = ''
             visit_numbers_dict['现病史'] = ''
             visit_numbers_dict['既往史'] = ''
 
@@ -178,10 +179,16 @@ class MedicalGraph:
                 medical_payment_methods.append(medical_payment_method)
                 rels_visit_medical_payment_method.append([visit_number, medical_payment_method])                # 就诊号(数字)-医疗付款方式(自费或社保)检查关系；当次就诊付款方式
 
+            if '主诉' in data_json:
+                main_complaint, main_diagnosis_name = data_json['主诉'], data_json['主要诊断名称']
+                visit_numbers_dict['主诉'] = main_complaint
+                main_complaints.append(main_complaint)
+                rels_main_complaint_diagnosis_name.append([main_complaint, main_diagnosis_name])                # 主诉(内容)-主要诊断名称(内容) 关系；病人描述的主诉推断疾病名称(主要诊断名称)
+
             visit_numbers_infos.append(visit_numbers_dict)
-        return set(patient_names), set(department_names), set(main_diagnosis_names), set(main_diagnostic_codes), set(doctor_names), set(doctor_ids), set(medical_payment_methods), visit_numbers_infos, \
+        return set(patient_names), set(department_names), set(main_diagnosis_names), set(main_diagnostic_codes), set(doctor_names), set(doctor_ids), set(medical_payment_methods), set(main_complaints), visit_numbers_infos, \
                rels_patient_name_visit_number, rels_visit_number_department_name, rels_department_name_main_diagnosis_name, \
-               rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method
+               rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method, rels_main_complaint_diagnosis_name
 
     '''建立节点'''
     def create_node(self, label, nodes):
@@ -226,9 +233,9 @@ class MedicalGraph:
 
     '''创建知识图谱实体节点类型schema'''
     def create_graphnodes(self):
-        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, \
+        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, main_complaints, \
         visit_numbers_infos, rels_patient_name_visit_number, rels_visit_number_department_name, rels_department_name_main_diagnosis_name, \
-        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method = self.read_nodes()
+        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method, rels_main_complaint_diagnosis_name = self.read_nodes()
         self.create_visit_numbers_nodes(visit_numbers_infos)
         self.create_node('患者名称', patient_names)
         self.create_node('科室名称', department_names)
@@ -237,6 +244,7 @@ class MedicalGraph:
         self.create_node('医生名称', doctor_names)
         self.create_node('医生工号', doctor_ids)
         self.create_node('医疗付款方式', medical_payment_methods)
+        self.create_node('主诉', main_complaints)
 
         '''
         # Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
@@ -262,7 +270,6 @@ class MedicalGraph:
         # self.create_node('体格检查描述_', Physical_exam_descriptions, nums=1)
         # self.create_node('医嘱项目内容_', Contents_of_doctors_orders, nums=1)
         # self.create_node('描述_', Describes, nums=1)
-        # self.create_node('主诉_', Main_complaints, nums=1)
         # self.create_node('现病史_', History_of_present_illnesses, nums=1)
         # self.create_node('既往史_', Past_historys, nums=1)
         '''
@@ -270,9 +277,9 @@ class MedicalGraph:
 
     '''创建实体关系边'''
     def create_graphrels(self):
-        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, \
+        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, main_complaints, \
         visit_numbers_infos, rels_patient_name_visit_number, rels_visit_number_department_name, rels_department_name_main_diagnosis_name, \
-        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method = self.read_nodes()
+        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method, rels_main_complaint_diagnosis_name = self.read_nodes()
         self.create_relationship('患者名称', '就诊号', rels_patient_name_visit_number, '就诊号', '患者名和当次看病就诊号')
         self.create_relationship('就诊号', '科室名称', rels_visit_number_department_name, '科室名称', '该就诊号看的科室名')
         self.create_relationship('科室名称', '主要诊断名称', rels_department_name_main_diagnosis_name, '疾病名称', '当次就医的疾病名称')
@@ -280,6 +287,7 @@ class MedicalGraph:
         self.create_relationship('就诊号', '医生名称', rels_visit_department_doctor_name, '医生名', '医生名')
         self.create_relationship('医生名称', '医生工号', rels_doctor_name_doctor_id, '工号', '医生工号')
         self.create_relationship('就诊号', '医疗付款方式', rels_visit_medical_payment_method, '付款方式', '付款方式')
+        self.create_relationship('主诉', '主要诊断名称', rels_main_complaint_diagnosis_name, '所属疾病名', '所属疾病名')
 
         '''
         # Clinic_numbers, Visit_numbers, Department_names, Patient_names, Id_numbers, Patient_genders, Ages, Doctor_ids, Medical_payment_methods, Main_diagnostic_codes, Main_diagnosis_descriptions, Main_diagnosis_names, Doctor_names, Other_diagnoses_1s, Other_diagnosis_1_codes, Other_diagnoses_2s, \
@@ -307,7 +315,6 @@ class MedicalGraph:
         # self.create_relationship('体格检查描述', '体格检查描述_', rels_ephysical_exam_description, '体格检查描述', '体格检查描述', nums=1)
         # self.create_relationship('医嘱项目内容', '医嘱项目内容_', rels_contents_of_doctors_order, '医嘱项目内容', '医嘱项目内容', nums=1)
         # self.create_relationship('描述', '描述_', rels_describe, '描述', '描述', nums=1)
-        # self.create_relationship('主诉', '主诉_', rels_main_complaint, '主诉', '主诉', nums=1)
         # self.create_relationship('现病史', '现病史_', rels_history_of_present_illness, '现病史', '现病史', nums=1)
         # self.create_relationship('既往史', '既往史_', rels_past_history, '既往史', '既往史', nums=1)
         '''
@@ -340,9 +347,9 @@ class MedicalGraph:
         if not os.path.exists(self.dict_save_dir):
             os.makedirs(self.dict_save_dir)
 
-        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, \
+        patient_names, department_names, main_diagnosis_names, main_diagnostic_codes, doctor_names, doctor_ids, medical_payment_methods, main_complaints, \
         visit_numbers_infos, rels_patient_name_visit_number, rels_visit_number_department_name, rels_department_name_main_diagnosis_name, \
-        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method = self.read_nodes()
+        rels_main_diagnosis_name_diagnostic_codes, rels_visit_department_doctor_name, rels_doctor_name_doctor_id, rels_visit_medical_payment_method, rels_main_complaint_diagnosis_name = self.read_nodes()
 
         with open(os.path.join(self.dict_save_dir, 'patient_names.txt'), 'w+', encoding='utf-8') as f_patient_names:
             f_patient_names.write('\n'.join(list(patient_names)))
@@ -364,6 +371,9 @@ class MedicalGraph:
 
         with open(os.path.join(self.dict_save_dir, 'medical_payment_methods.txt'), 'w+', encoding='utf-8') as f_medical_payment_methods:
             f_medical_payment_methods.write('\n'.join(list(medical_payment_methods)))
+
+        with open(os.path.join(self.dict_save_dir, 'main_complaints.txt'), 'w+', encoding='utf-8') as f_main_complaints:
+            f_main_complaints.write('\n'.join(list(main_complaints)))
 
         return
 
