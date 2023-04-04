@@ -41,6 +41,7 @@ class QuestionClassifier:
 
         # 问句疑问词
         self.belong_qwds = ['要看什么科', '属于', '什么科', '科室', '属于什么科室', '属于什么科', '属于什么病', '属于什么疾病', '可能是什么疾病', '可能是什么病', '什么病']
+        self.getname_qwds = ['医生', '哪些', '有哪些医生', '可以看诊的医生有哪些', '哪些医生可以看诊']
 
         print('model init finished ......')
 
@@ -72,8 +73,13 @@ class QuestionClassifier:
             question_type = 'main_complaints_diagnosis_names'
             question_types.append(question_type)
 
+        # 根据科室名称，寻找有哪些医生
+        if self.check_words(self.getname_qwds, question) and ('department_names' in types):
+            question_type = 'department_names_doctor_names'
+            question_types.append(question_type)
 
-        # 将多疙分类结果进行合并处理，组装成一个字典
+
+        # 将多个分类结果进行合并处理，组装成一个字典
         data['question_types'] = question_types
 
         return data
