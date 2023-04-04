@@ -32,8 +32,11 @@ class QuestionPaser:
             if question_type == 'main_diagnosis_names_department_names':
                 sql = self.sql_transfer(question_type, entity_dict.get('main_diagnosis_names'))
                 # print("sql", sql)
-            if question_type == 'main_complaints_diagnosis_names':
+            elif question_type == 'main_complaints_diagnosis_names':
                 sql = self.sql_transfer(question_type, entity_dict.get('main_complaints'))
+
+            elif question_type == 'department_names_doctor_names':
+                sql = self.sql_transfer(question_type, entity_dict.get('department_names'))
 
             if sql:
                 sql_['sql'] = sql
@@ -54,8 +57,12 @@ class QuestionPaser:
             sql = ["MATCH (m:科室名称)-[r:疾病名称]->(n:主要诊断名称) where n.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
 
         # 根据主诉，推断疾病名称(主要诊断名称)
-        if question_type == 'main_complaints_diagnosis_names':
+        elif question_type == 'main_complaints_diagnosis_names':
             sql = ["MATCH (m:主诉)-[r:所属疾病名]->(n:主要诊断名称) where m.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
+
+        # 根据科室名称，寻找有哪些医生
+        elif question_type == 'department_names_doctor_names':
+            sql = ["MATCH (m:科室名称)-[r:配置医生]->(n:医生名称) where m.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
 
         return sql
 
