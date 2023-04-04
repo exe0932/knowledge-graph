@@ -19,6 +19,7 @@ class QuestionClassifier:
         self.main_diagnostic_codes_path = os.path.join(cur_dir, 'dict/main_diagnostic_codes.txt')
         self.medical_payment_methods_path = os.path.join(cur_dir, 'dict/medical_payment_methods.txt')
         self.patient_names_path = os.path.join(cur_dir, 'dict/patient_names.txt')
+        self.main_complaints_path = os.path.join(cur_dir, 'dict/main_complaints.txt')
 
         # 加载特征词
         self.department_names_wds = [i.strip() for i in open(self.department_names_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
@@ -28,8 +29,10 @@ class QuestionClassifier:
         self.main_diagnostic_codes_wds = [i.strip() for i in open(self.main_diagnostic_codes_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
         self.medical_payment_methods_wds = [i.strip() for i in open(self.medical_payment_methods_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
         self.patient_names_wds = [i.strip() for i in open(self.patient_names_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
+        self.main_complaints_wds = [i.strip() for i in open(self.main_complaints_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
 
-        self.region_words = set(self.department_names_wds + self.doctor_ids_wds + self.doctor_names_wds + self.main_diagnosis_names_wds + self.main_diagnostic_codes_wds + self.medical_payment_methods_wds + self.patient_names_wds)
+        self.region_words = set(self.department_names_wds + self.doctor_ids_wds + self.doctor_names_wds + self.main_diagnosis_names_wds + self.main_diagnostic_codes_wds + self.medical_payment_methods_wds + self.patient_names_wds \
+                                + self.main_complaints_wds)
         # 构造领域actree
         self.region_tree = self.build_actree(list(self.region_words))
 
@@ -37,7 +40,7 @@ class QuestionClassifier:
         self.wdtype_dict = self.build_wdtype_dict()
 
         # 问句疑问词
-        self.belong_qwds = ['要看什么科', '属于', '什么科', '科室', '属于什么科室', '属于什么科']
+        self.belong_qwds = ['要看什么科', '属于', '什么科', '科室', '属于什么科室', '属于什么科', '属于什么病', '属于什么疾病', '可能是什么疾病', '可能是什么病', '什么病']
 
         print('model init finished ......')
 
@@ -64,6 +67,12 @@ class QuestionClassifier:
             question_type = 'main_diagnosis_names_department_names'
             question_types.append(question_type)
 
+        # 利用主诉症状，推断疾病名称
+        if self.check_words(self.belong_qwds, question) and ('main_complaints' in types):
+            question_type = 'main_complaints_diagnosis_names'
+            question_types.append(question_type)
+
+
         # 将多疙分类结果进行合并处理，组装成一个字典
         data['question_types'] = question_types
 
@@ -88,10 +97,13 @@ class QuestionClassifier:
                 wd_dict[wd].append('medical_payment_methods')
             if wd in self.patient_names_wds:
                 wd_dict[wd].append('patient_names')
+            if wd in self.main_complaints_wds:
+                wd_dict[wd].append('main_complaints')
         return wd_dict
 
     '''构造actree，加速过滤'''
     def build_actree(self, wordlist):
+        # print(wordlist)
         actree = ahocorasick.Automaton()
         for index, word in enumerate(wordlist):
             actree.add_word(word, (index, word))
@@ -102,8 +114,10 @@ class QuestionClassifier:
     def check_medical(self, question):
         region_wds = list()
         for i in self.region_tree.iter(question):
+            # print(i)
             wd = i[1][1]
             region_wds.append(wd)
+        # print(region_wds)
         stop_wds = []
         for wd1 in region_wds:
             for wd2 in region_wds:
@@ -125,7 +139,7 @@ class QuestionClassifier:
 
 if __name__ == '__main__':
     handler = QuestionClassifier()
-    # handler.check_medical('急性鼻炎')
+    # handler.check_medical('急性鼻炎要看什么科')
     # handler.classify('急性鼻炎') #急性鼻炎要看什么科
     while 1:
         question = input('input an question:')
