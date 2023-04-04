@@ -25,10 +25,10 @@ class AnswerSearcher:
             for query in queries:
                 # print("query", query)
                 ress = self.g.run(query).data()
-                # print("ress", ress)
+                print("ress", ress)
                 answers += ress
             final_answer = self.answer_prettify(question_type, answers)
-            # print("final_answer", final_answer)
+            print("final_answer", final_answer)
             if final_answer:
                 final_answers.append(final_answer)
         return final_answers
@@ -44,6 +44,12 @@ class AnswerSearcher:
             subject = answers[0]['n.name']
             final_answer = '{0}的症状建议挂的科室有:{1}'.format(subject, ';'.join(list(set(desc))[:self.num_limit]))
             # print("final_answer", final_answer)
+
+        elif question_type == 'main_complaints_diagnosis_names':
+            desc = [i['n.name'] for i in answers]
+            subject = answers[0]['m.name']
+            final_answer = '根据病人描述的 : {0}，专业医生推断的疾病名称为 : {1}'.format(subject, ';'.join(list(set(desc))[:self.num_limit]))
+
         return final_answer
 
 
@@ -51,4 +57,5 @@ if __name__ == '__main__':
     searcher = AnswerSearcher()
     # a = [{'question_type': 'main_diagnosis_names_department_names', 'sql': [
     #     "MATCH (m:科室名称)-[r:疾病名称]->(n:主要诊断名称) where n.name = '急性鼻炎' return m.name, r.name, n.name"]}]
-    # searcher.search_main(a)
+    a = [{'question_type': 'main_complaints_diagnosis_names', 'sql': ["MATCH (m:主诉)-[r:所属疾病名]->(n:主要诊断名称) where m.name = '咳嗽两天' return m.name, r.name, n.name"]}]
+    searcher.search_main(a)
