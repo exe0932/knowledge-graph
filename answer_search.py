@@ -50,6 +50,11 @@ class AnswerSearcher:
             subject = answers[0]['m.name']
             final_answer = '根据病人描述的 : {0}，专业医生推断的疾病名称为 : {1}'.format(subject, ';'.join(list(set(desc))[:self.num_limit]))
 
+        elif question_type == 'department_names_doctor_names':
+            desc = [i['n.name'] for i in answers]
+            subject = answers[0]['m.name']
+            final_answer = '{0}有以下这些医生可以选择 : {1}'.format(subject, '、'.join(list(set(desc))[:self.num_limit]))
+
         return final_answer
 
 
@@ -57,5 +62,5 @@ if __name__ == '__main__':
     searcher = AnswerSearcher()
     # a = [{'question_type': 'main_diagnosis_names_department_names', 'sql': [
     #     "MATCH (m:科室名称)-[r:疾病名称]->(n:主要诊断名称) where n.name = '急性鼻炎' return m.name, r.name, n.name"]}]
-    a = [{'question_type': 'main_complaints_diagnosis_names', 'sql': ["MATCH (m:主诉)-[r:所属疾病名]->(n:主要诊断名称) where m.name = '咳嗽两天' return m.name, r.name, n.name"]}]
+    a = [{'question_type': 'department_names_doctor_names', 'sql': ["MATCH (m:科室名称)-[r:配置医生]->(n:医生名称) where m.name = '急诊外科' return m.name, r.name, n.name"]}]
     searcher.search_main(a)
