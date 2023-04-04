@@ -67,7 +67,7 @@ class QuestionClassifier:
             question_type = 'main_diagnosis_names_department_names'
             question_types.append(question_type)
 
-        # 利用主诉症状，推断疾病名称
+        # 根据主诉，推断疾病名称(主要诊断名称)
         if self.check_words(self.belong_qwds, question) and ('main_complaints' in types):
             question_type = 'main_complaints_diagnosis_names'
             question_types.append(question_type)
