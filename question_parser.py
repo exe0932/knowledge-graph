@@ -38,6 +38,9 @@ class QuestionPaser:
             elif question_type == 'department_names_doctor_names':
                 sql = self.sql_transfer(question_type, entity_dict.get('department_names'))
 
+            elif question_type == 'main_diagnosis_names_contents_of_doctors_orders':
+                sql = self.sql_transfer(question_type, entity_dict.get('main_diagnosis_names'))
+
             if sql:
                 sql_['sql'] = sql
 
@@ -64,6 +67,10 @@ class QuestionPaser:
         elif question_type == 'department_names_doctor_names':
             sql = ["MATCH (m:科室名称)-[r:配置医生]->(n:医生名称) where m.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
 
+        # 根据疾病名称(主要诊断名称)，推荐吃什么药(医嘱)
+        elif question_type == 'main_diagnosis_names_contents_of_doctors_orders':
+            sql = ["MATCH (m:主要诊断名称)-[r:医嘱项目内容]->(n:医嘱项目内容) where m.name = '{0}' return m.name, r.name, n.name".format(i) for i in entities]
+
         return sql
 
 
@@ -74,6 +81,6 @@ class QuestionPaser:
 
 if __name__ == '__main__':
     handler = QuestionPaser()
-    # a = handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
-    a = handler.parser_main({'args': {'咳嗽两天': ['main_complaints']}, 'question_types': ['main_complaints_diagnosis_names']})
+    a = handler.parser_main({'args': {'急性鼻炎': ['main_diagnosis_names']}, 'question_types': ['main_diagnosis_names_department_names']})
+    # a = handler.parser_main({'args': {'急诊外科': ['department_names']}, 'question_types': ['department_names_doctor_names']})
     print(a)

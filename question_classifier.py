@@ -20,6 +20,7 @@ class QuestionClassifier:
         self.medical_payment_methods_path = os.path.join(cur_dir, 'dict/medical_payment_methods.txt')
         self.patient_names_path = os.path.join(cur_dir, 'dict/patient_names.txt')
         self.main_complaints_path = os.path.join(cur_dir, 'dict/main_complaints.txt')
+        self.contents_of_doctors_orders = os.path.join(cur_dir, 'dict/contents_of_doctors_orders.txt')
 
         # 加载特征词
         self.department_names_wds = [i.strip() for i in open(self.department_names_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
@@ -30,9 +31,10 @@ class QuestionClassifier:
         self.medical_payment_methods_wds = [i.strip() for i in open(self.medical_payment_methods_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
         self.patient_names_wds = [i.strip() for i in open(self.patient_names_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
         self.main_complaints_wds = [i.strip() for i in open(self.main_complaints_path, encoding="utf-8") if i.strip()]    # encoding="utf-8"
+        self.contents_of_doctors_orders_wds = [i.strip() for i in open(self.contents_of_doctors_orders, encoding="utf-8") if i.strip()]    # encoding="utf-8"
 
         self.region_words = set(self.department_names_wds + self.doctor_ids_wds + self.doctor_names_wds + self.main_diagnosis_names_wds + self.main_diagnostic_codes_wds + self.medical_payment_methods_wds + self.patient_names_wds \
-                                + self.main_complaints_wds)
+                                + self.main_complaints_wds + self.contents_of_doctors_orders_wds)
         # 构造领域actree
         self.region_tree = self.build_actree(list(self.region_words))
 
@@ -42,6 +44,7 @@ class QuestionClassifier:
         # 问句疑问词
         self.belong_qwds = ['要看什么科', '属于', '什么科', '科室', '属于什么科室', '属于什么科', '属于什么病', '属于什么疾病', '可能是什么疾病', '可能是什么病', '什么病']
         self.getname_qwds = ['医生', '哪些', '有哪些医生', '可以看诊的医生有哪些', '哪些医生可以看诊']
+        self.cureway_qwds = ['怎么治疗', '如何医治', '怎么医治', '怎么治', '怎么医', '如何治', '医治方式', '疗法', '咋治', '怎么办', '咋办', '咋治', '治疗', '呢', '怎么办']
 
         print('model init finished ......')
 
@@ -78,6 +81,11 @@ class QuestionClassifier:
             question_type = 'department_names_doctor_names'
             question_types.append(question_type)
 
+        # 根据疾病名称(主要诊断名称)，推荐吃什么药(医嘱)
+        if self.check_words(self.cureway_qwds, question) and ('main_diagnosis_names' in types):
+            question_type = 'main_diagnosis_names_contents_of_doctors_orders'
+            question_types.append(question_type)
+
 
         # 将多个分类结果进行合并处理，组装成一个字典
         data['question_types'] = question_types
@@ -105,6 +113,8 @@ class QuestionClassifier:
                 wd_dict[wd].append('patient_names')
             if wd in self.main_complaints_wds:
                 wd_dict[wd].append('main_complaints')
+            if wd in self.contents_of_doctors_orders_wds:
+                wd_dict[wd].append('contents_of_doctors_orders')
         return wd_dict
 
     '''构造actree，加速过滤'''
@@ -146,8 +156,8 @@ class QuestionClassifier:
 if __name__ == '__main__':
     handler = QuestionClassifier()
     # handler.check_medical('急性鼻炎要看什么科')
-    # handler.classify('急性鼻炎') #急性鼻炎要看什么科
-    while 1:
-        question = input('input an question:')
-        data = handler.classify(question)
-        print(data)
+    print(handler.classify('急性鼻炎要看什么科') )#急性鼻炎要看什么科
+    # while 1:
+    #     question = input('input an question:')
+    #     data = handler.classify(question)
+    #     print(data)
